@@ -4,6 +4,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { VerifyCodeDto } from './dto/verify-code.dto';
 import { ResendCodeDto } from './dto/resend-code.dto';
+import { AzureCallbackDto } from './dto/azure-callback.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -31,5 +32,11 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async resendCode(@Body() resendCodeDto: ResendCodeDto) {
     return this.authService.resendCode(resendCodeDto);
+  }
+
+  @Post('azure-callback')
+  @HttpCode(HttpStatus.OK)
+  async azureCallback(@Body() azureCallbackDto: AzureCallbackDto) {
+    return this.authService.azureCallback(azureCallbackDto);
   }
 }
