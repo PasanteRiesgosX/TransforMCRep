@@ -8,29 +8,15 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   constructor() {
-    const dbHost = process.env.DB_HOST || 'localhost';
-    const dbPort = Number(process.env.DB_PORT) || 1433;
-    const dbName = process.env.DB_NAME || 'transformc_db';
-    const dbUser = process.env.DB_USER;
-    const dbPassword = process.env.DB_PASSWORD;
+    const databaseUrl = process.env.DATABASE_URL;
 
-    if (!dbUser || !dbPassword) {
+    if (!databaseUrl) {
       throw new Error(
-        'Configuración crítica ausente: Se deben definir DB_USER y DB_PASSWORD en el archivo .env o en las variables de entorno.',
+        'Configuración crítica ausente: Se debe definir DATABASE_URL en el archivo .env o en las variables de entorno.',
       );
     }
 
-    const adapter = new PrismaMssql({
-      server: dbHost,
-      port: dbPort,
-      database: dbName,
-      user: dbUser,
-      password: dbPassword,
-      options: {
-        encrypt: true,
-        trustServerCertificate: true,
-      },
-    });
+    const adapter = new PrismaMssql(databaseUrl);
 
     super({ adapter });
   }
