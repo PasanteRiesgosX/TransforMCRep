@@ -58,23 +58,63 @@
   --font-display: "Sora", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-mono: "Space Mono", monospace;
+  
+  --animate-fade-in: fadeIn 0.4s ease-out;
+  --animate-blur-focus: blurToFocus 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-fade-up-blur: fadeUpBlur 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-subtitle-reveal: subtitleReveal 1s ease-out forwards;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Base reset ── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@keyframes blurToFocus {
+  0% {
+    filter: blur(12px);
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  100% {
+    filter: blur(0px);
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-body {
-  font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: var(--color-surface-dim);
-  color: var(--color-on-surface);
+@keyframes fadeUpBlur {
+  0% {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes subtitleReveal {
+  0% {
+    opacity: 0;
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+/* ── Global document styles ── */
+@layer base {
+  body {
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--color-surface-dim);
+    color: var(--color-on-surface);
+  }
 }
 
 /* ── NEON_ARCH Custom Classes ── */
@@ -124,19 +164,103 @@ body {
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
-/* ── Spinner animation ── */
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-.animate-spin {
-  animation: spin 1s linear infinite;
+/* Open frame used by the results action. */
+@layer components {
+  .results-frame {
+    padding: 0.55rem 0.8rem;
+    background:
+      linear-gradient(#ffffff, #ffffff) left top / 100% 2px no-repeat,
+      linear-gradient(#ffffff, #ffffff) left top / 2px 100% no-repeat,
+      linear-gradient(#ffffff, #ffffff) right top / 2px 50% no-repeat,
+      linear-gradient(#ffffff, #ffffff) left bottom / 50% 2px no-repeat;
+  }
 }
 
-/* ── Fade in animation ── */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+/* ── Logo bounce animation ── */
+@keyframes logoBounce {
+  0% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-22px) scale(1.04);
+  }
+  40% {
+    transform: translateY(0) scale(0.98);
+  }
+  60% {
+    transform: translateY(-10px) scale(1.02);
+  }
+  80% {
+    transform: translateY(0) scale(1);
+  }
+  90% {
+    transform: translateY(-3px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
-.animate-fade-in {
-  animation: fadeIn 0.4s ease-out;
+.animate-logo-bounce {
+  animation: logoBounce 0.75s cubic-bezier(0.28, 0.84, 0.42, 1);
+}
+
+/* ── Login button progressive morph ── */
+@keyframes loginBtnMorph {
+  0% {
+    background-color: #F582A2;
+    box-shadow: 0 0 20px rgba(245, 130, 162, 0.5);
+    border-color: transparent;
+  }
+  15% {
+    background-color: #E06DA7;
+    box-shadow: 0 0 30px rgba(245, 130, 162, 0.85);
+    border-color: transparent;
+  }
+  30% {
+    background-color: #E06DA7;
+    box-shadow: 0 0 30px rgba(245, 130, 162, 0.85);
+    border-color: transparent;
+  }
+  100% {
+    background-color: #050b18;
+    box-shadow: 0 0 30px rgba(0, 215, 208, 0.65), 0 0 60px rgba(5, 11, 24, 0.9);
+    border-color: rgba(0, 215, 208, 0.5);
+  }
+}
+
+.login-btn-morph {
+  transition: all 0.4s ease-out;
+  border: 1px solid transparent;
+}
+
+.login-btn-morph:hover {
+  animation: loginBtnMorph 1.2s cubic-bezier(0.3, 0, 0.2, 1) forwards;
+}
+
+@keyframes surveyCtaProgress {
+  from {
+    background-color: #00dbe9;
+    box-shadow: 0 0 15px rgba(0, 215, 208, 0.4);
+  }
+  to {
+    background-color: #ffd200;
+    box-shadow: 0 0 30px rgba(255, 210, 0, 0.75);
+  }
+}
+
+@keyframes surveyAccentProgress {
+  from {
+    background-color: #00d7d0;
+  }
+  to {
+    background-color: #ffd200;
+  }
+}
+
+.survey-cta:hover {
+  animation: surveyCtaProgress 0.5s ease-in forwards;
+}
+
+.survey-content:has(.survey-cta:hover) .survey-accent-indicator {
+  animation: surveyAccentProgress 0.5s ease-in forwards;
 }

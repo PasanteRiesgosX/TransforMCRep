@@ -5,6 +5,7 @@ import { LoginDto } from './dto/login.dto';
 import { VerifyCodeDto } from './dto/verify-code.dto';
 import { ResendCodeDto } from './dto/resend-code.dto';
 import { AzureCallbackDto } from './dto/azure-callback.dto';
+import { CompleteProfileDto } from './dto/complete-profile.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -38,5 +39,11 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async azureCallback(@Body() azureCallbackDto: AzureCallbackDto) {
     return this.authService.azureCallback(azureCallbackDto);
+  }
+
+  @Post('complete-profile')
+  @HttpCode(HttpStatus.OK)
+  async completeProfile(@Body() completeProfileDto: CompleteProfileDto) {
+    return this.authService.completeProfile(completeProfileDto);
   }
 }

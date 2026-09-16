@@ -12,6 +12,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { VerifyCodeDto } from './dto/verify-code.dto';
 import { ResendCodeDto } from './dto/resend-code.dto';
+import { CompleteProfileDto } from './dto/complete-profile.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -342,5 +343,48 @@ export class AuthService {
       }
       throw new UnauthorizedException('Error procesando la autenticación de Microsoft: ' + error.message);
     }
+  }
+
+  // -------------------------------------------------------------
+  // 6. COMPLETAR PERFIL JIT (Azure AD)
+  // -------------------------------------------------------------
+  async completeProfile(completeProfileDto: CompleteProfileDto) {
+    const emailNormalized = completeProfileDto.email.toLowerCase().trim();
+
+    // Buscar usuario
+    const user = await this.prisma.user.findUnique({
+      where: { email: emailNormalized },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado.');
+    }
+
+    // Actualizar área y cargo
+    const updatedUser = await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        area: completeProfileDto.area.trim(),
+        role: completeProfileDto.role.trim(),
+      },
+    });
+
+    // Generar nuevo JWT interno con los datos actualizados
+    const payload = {
+      sub: updatedUser.id,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      area: updatedUser.area,
+    };
+
+    const accessToken = this.jwtService.sign(payload);
+    const { password, ...userWithoutPassword } = updatedUser;
+
+    return {
+      statusCode: 200,
+      message: 'Perfil completado exitosamente.',
+      accessToken,
+      user: userWithoutPassword,
+    };
   }
 }

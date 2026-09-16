@@ -27,8 +27,12 @@ export default function AzureCallback() {
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('user', JSON.stringify(user));
 
-        // Redirigir al usuario al dashboard
-        navigate('/dashboard');
+        // Redirigir según el estado del perfil
+        if (user.area === 'Por Definir' || user.role === 'USER') {
+          navigate('/complete-profile');
+        } else {
+          navigate('/welcome');
+        }
       } catch (err: any) {
         console.error('Error durante la autenticación de Azure', err);
         setError(err.response?.data?.message || 'Error durante la autenticación de Azure.');
@@ -54,7 +58,7 @@ export default function AzureCallback() {
         </div>
       ) : (
         <div className="flex flex-col items-center">
-          <svg className="animate-spin h-8 w-8 text-[#00dbe9] mb-4" viewBox="0 0 24 24" fill="none">
+          <svg className="animate-spin h-8 w-8 text-[#00D7D0] mb-4" viewBox="0 0 24 24" fill="none">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>

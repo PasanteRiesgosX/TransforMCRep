@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import './CookieMonsterEyes.css';
 
 interface EyeConfig {
     centerX: number;
@@ -84,16 +83,21 @@ export default function CookieMonsterEyes() {
     }, []);
 
     return (
-        <div className="cookie-widget">
-            <div className="cookie-scene" ref={sceneRef}>
+        <div className="relative w-48 h-48 sm:w-64 sm:h-64 flex items-center justify-center p-4">
+            <div 
+                ref={sceneRef}
+                className="relative w-full h-full max-w-[200px] max-h-[200px] aspect-square rounded-full flex items-center justify-center overflow-visible drop-shadow-[0_0_15px_rgba(255,210,0,0.3)] bg-[url('https://cdn-icons-png.flaticon.com/512/5770/5770638.png')] bg-contain bg-no-repeat bg-center mix-blend-screen opacity-90 transition-opacity hover:opacity-100"
+            >
+                {/* Left Pupil */}
                 <div
                     ref={leftPupilRef}
-                    className="pupil pupil-left"
+                    className="absolute w-[18%] h-[18%] bg-black rounded-full shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.4)] pointer-events-none -translate-x-1/2 -translate-y-1/2"
                 />
 
+                {/* Right Pupil */}
                 <div
                     ref={rightPupilRef}
-                    className="pupil pupil-right"
+                    className="absolute w-[18%] h-[18%] bg-black rounded-full shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.4)] pointer-events-none -translate-x-1/2 -translate-y-1/2"
                 />
             </div>
         </div>

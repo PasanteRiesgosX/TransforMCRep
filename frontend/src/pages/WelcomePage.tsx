@@ -1,17 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './WelcomePage.css';
-import multigImg from '../assets/img/multig.png';
+import { useEffect, useRef } from 'react';
 import logowImg from '../assets/img/logow.png';
 import CookieMonsterEyes from './CookieMonsterEyes';
-
-interface UserData {
-  id?: string;
-  email?: string;
-  fullName?: string;
-  area?: string;
-  role?: string;
-}
 
 // Hacker Scramble Effect helper
 class ScrambleEffect {
@@ -91,31 +80,10 @@ class ScrambleEffect {
 }
 
 export default function WelcomePage() {
-  const navigate = useNavigate();
-  const [user, setUser] = useState<UserData | null>(null);
-  const [showUserMenu, setShowUserMenu] = useState(false);
-
   const el1Ref = useRef<HTMLHeadingElement | null>(null);
   const el2Ref = useRef<HTMLHeadingElement | null>(null);
 
   useEffect(() => {
-    // Check authentication
-    const token = localStorage.getItem('accessToken');
-    const userData = localStorage.getItem('user');
-
-    if (userData) {
-      try {
-        setUser(JSON.parse(userData));
-      } catch {
-        // Ignored
-      }
-    }
-
-    if (!token) {
-      // If not authenticated, we can still show or redirect
-      // Keeping lenient for testing
-    }
-
     // Scramble Animation
     let fx1: ScrambleEffect | null = null;
     let fx2: ScrambleEffect | null = null;
@@ -153,83 +121,17 @@ export default function WelcomePage() {
     alert('¡Redirigiendo a la encuesta de TransforMC!');
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
-    navigate('/login', { replace: true });
-  };
-
   return (
-    <div className="welcome-page min-h-screen w-full flex flex-col bg-[#000000] text-white selection:bg-[#ffabf3] selection:text-black">
+    <div className="flex-1 w-full flex flex-col bg-surface-dim text-white selection:bg-primary selection:text-black p-7 md:p-10 xl:p-12">
 
-      {/* ── HEADER ── */}
-      <header className="w-full px-6 md:px-12 py-5 flex justify-between items-center max-w-7xl mx-auto z-50 sticky top-0 bg-[#0e0e0e]/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_15px_rgba(138,5,190,0.15)]">
-        {/* Brand */}
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded bg-[] flex items-center justify-center overflow-hidden shadow-[0_0_12px_rgba(138,5,190,0.6)]">
-            <img src={multigImg} alt="Logo MultiG" className="w-full h-full object-cover" />
-          </div>
-          <span className="font-['Sora'] text-xl md:text-2xl font-bold tracking-tight text-white italic">
-            TransforMC
-          </span>
-        </div>
 
-        {/* Navigation & User menu */}
-        <div className="flex items-center gap-4">
-          {user && (
-            <span className="hidden md:inline-block font-mono text-xs text-[#dcbed4] tracking-wide">
-              {user.fullName || user.email}
-            </span>
-          )}
-
-          <div className="relative">
-            <button
-              onClick={() => setShowUserMenu(!showUserMenu)}
-              className="w-10 h-10 rounded-full welcome-glass-panel flex items-center justify-center hover:bg-white/10 transition-colors cursor-pointer group"
-              title="Cuenta de usuario"
-            >
-              <span className="material-symbols-outlined text-[#dcbed4] group-hover:text-white transition-colors text-xl">
-                person
-              </span>
-            </button>
-
-            {/* Dropdown Menu */}
-            {showUserMenu && (
-              <div className="absolute right-0 mt-2 w-56 welcome-glass-panel rounded-xl py-2 px-3 shadow-2xl z-50 bg-[#131313]/95 border border-white/15 animate-fade-in">
-                {user && (
-                  <div className="px-2 py-2 border-b border-white/10 mb-1">
-                    <p className="text-xs font-bold text-white truncate m-0 font-['Sora']">
-                      {user.fullName || 'Usuario'}
-                    </p>
-                    <p className="text-[11px] text-white/50 truncate m-0 font-mono">
-                      {user.email}
-                    </p>
-                    {user.area && (
-                      <p className="text-[10px] text-[#ffabf3] mt-1 m-0 font-mono">
-                        {user.area}
-                      </p>
-                    )}
-                  </div>
-                )}
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-left px-2 py-1.5 text-xs text-red-400 hover:text-red-300 hover:bg-white/5 rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-sm">logout</span>
-                  Cerrar Sesión
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
 
       {/* ── MAIN CONTENT ── */}
-      <main className="flex-grow w-full px-6 md:px-12 py-8 md:py-16 max-w-7xl mx-auto flex flex-col justify-center">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
+      <main className="flex-grow w-full px-6 md:px-12 py-4 md:py-6 max-w-7xl mx-auto flex flex-col justify-center overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center h-full max-h-[85vh]">
 
           {/* LEFT COLUMN: The Sci-Fi Visual Card */}
-          <div className="relative w-full aspect-[4/5] md:aspect-[3/4] max-h-[640px] rounded-2xl overflow-hidden welcome-glass-panel welcome-animate-blur-focus welcome-neon-glow group flex flex-col justify-between p-8 md:p-10">
+          <div className="relative w-full aspect-[4/5] md:aspect-[3/4] max-h-[480px] lg:max-h-[520px] rounded-2xl overflow-hidden glass-panel shadow-[0_0_25px_rgba(138,5,190,0.45)] [animation:var(--animate-blur-focus)] group flex flex-col justify-between p-6 md:p-8 mx-auto">
             {/* Background Image */}
             <img
               src={logowImg}
@@ -241,23 +143,23 @@ export default function WelcomePage() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-0 pointer-events-none" />
 
             {/* Top Right Watermark */}
-            <div className="relative z-10 self-end opacity-25 font-['Sora'] text-lg md:text-xl font-bold tracking-tight italic mix-blend-overlay">
+            <div className="relative z-10 self-end opacity-25 font-display text-base font-bold tracking-tight italic mix-blend-overlay">
 
             </div>
 
             {/* Center Icon Symbol */}
             <div className="relative z-10 self-center my-auto">
-              <span className="font-mono text-5xl md:text-6xl text-white opacity-80 welcome-text-glow font-bold">
+              <span className="font-mono text-4xl md:text-5xl text-white opacity-80 glow-text font-bold">
                 {'{}'}
               </span>
             </div>
 
             {/* Animated Text Lines */}
-            <div className="relative z-10 w-full space-y-3.5 mt-auto">
+            <div className="relative z-10 w-full space-y-2.5 mt-auto">
               <div className="w-full h-px bg-white/20" />
               <h2
                 ref={el1Ref}
-                className="font-['Sora'] text-2xl md:text-3xl lg:text-4xl text-white font-extrabold uppercase tracking-tight"
+                className="font-display text-xl md:text-2xl lg:text-3xl text-white font-extrabold uppercase tracking-tight"
                 data-text="Buscamos un"
                 style={{ visibility: 'hidden' }}
               >
@@ -266,38 +168,38 @@ export default function WelcomePage() {
               <div className="w-full h-px bg-white/20" />
               <h2
                 ref={el2Ref}
-                className="font-['Sora'] text-2xl md:text-3xl lg:text-4xl text-[#ffabf3] font-extrabold uppercase tracking-tight welcome-text-glow"
+                className="font-display text-xl md:text-2xl lg:text-3xl text-primary font-extrabold uppercase tracking-tight glow-text"
                 data-text="EQUIPO DIVERSO"
                 style={{ visibility: 'hidden' }}
               >
                 EQUIPO DIVERSO
               </h2>
               <div className="w-full h-px bg-white/20" />
-              <h3 className="font-['Inter'] text-xs md:text-sm text-[#dcbed4] uppercase tracking-widest font-semibold welcome-animate-subtitle m-0">
+              <h3 className="font-body text-[10px] md:text-xs text-on-surface-variant uppercase tracking-widest font-semibold m-0 [animation:var(--animate-subtitle-reveal)] opacity-0" style={{ animationDelay: '1.8s' }}>
                 QUE IMPULSE PROYECTOS CON I.A
               </h3>
             </div>
           </div>
 
           {/* RIGHT COLUMN: Description & CTA */}
-          <div className="flex flex-col items-start justify-center gap-6 max-w-xl py-4">
-            <div className="hidden lg:flex justify-end w-full">
-              <CookieMonsterEyes />
+          <div className="survey-content flex flex-col items-start justify-center gap-4 max-w-xl py-1">
+            <div className="hidden lg:flex justify-end w-full mb-2">
+
             </div>
 
             {/* Title with Decorative Badge */}
-            <div className="flex items-center gap-4 welcome-animate-fade-up" style={{ animationDelay: '0.2s' }}>
-              <h1 className="font-['Sora'] text-3xl md:text-4xl lg:text-5xl font-extrabold text-white tracking-tight m-0 glow-text">
+            <div className="flex items-center gap-4 opacity-0 [animation:var(--animate-fade-up-blur)]" style={{ animationDelay: '0.2s' }}>
+              <h1 className="font-display text-2xl md:text-3xl lg:text-4xl font-extrabold text-white tracking-tight m-0 glow-text">
                 TransforMC
               </h1>
-              {/* Decorative Diamond Badge */}
-              <div className="w-10 h-10 bg-transparent border border-[#8A05BE] rounded-sm transform rotate-45 flex items-center justify-center shadow-[0_0_15px_rgba(138,5,190,0.5)]">
-                <div className="w-3.5 h-3.5 bg-[#8A05BE] rounded-sm" />
+              {/* Decorative Diamond Badge (Yellow) */}
+              <div className="w-8 h-8 bg-transparent border border-[#FFFFFF] rounded-sm transform rotate-45 flex items-center justify-center shadow-[0_0_12px_rgba(255,210,0,0.5)]">
+                <div className="survey-accent-indicator w-2.5 h-2.5 bg-[#00D7D0] rounded-sm" />
               </div>
             </div>
 
             {/* Descriptive Body Paragraphs */}
-            <div className="space-y-4 font-['Inter'] text-sm md:text-base text-[#dcbed4] leading-relaxed welcome-animate-fade-up" style={{ animationDelay: '0.4s' }}>
+            <div className="space-y-3 font-body text-xs md:text-sm text-on-surface-variant leading-relaxed opacity-0 [animation:var(--animate-fade-up-blur)]" style={{ animationDelay: '0.4s' }}>
               <p className="m-0">
                 Estamos viviendo una nueva etapa de transformación, donde la Inteligencia Artificial abre puertas a formas más inteligentes, ágiles y creativas de trabajar. Este proyecto busca acercar esa oportunidad a las personas, creando un espacio para explorar, aprender y aportar nuevas perspectivas.
               </p>
@@ -306,20 +208,20 @@ export default function WelcomePage() {
               </p>
             </div>
 
-            <div className="w-full h-px bg-white/10 my-2 welcome-animate-fade-up" style={{ animationDelay: '0.5s' }} />
+            <div className="w-full h-px bg-white/10 my-2 opacity-0 [animation:var(--animate-fade-up-blur)]" style={{ animationDelay: '0.5s' }} />
 
             {/* CTA Section */}
-            <div className="flex flex-col gap-4 welcome-animate-fade-up w-full" style={{ animationDelay: '0.6s' }}>
-              <p className="font-mono text-xs text-white/70 uppercase tracking-[0.2em] m-0 font-bold">
+            <div className="flex flex-col gap-3 opacity-0 [animation:var(--animate-fade-up-blur)] w-full" style={{ animationDelay: '0.6s' }}>
+              <p className="font-mono text-[10px] text-white/70 uppercase tracking-[0.2em] m-0 font-bold">
                 QUEREMOS SABER SOBRE TI
               </p>
 
               <button
                 onClick={handleStartSurvey}
-                className="bg-[#9333EA] hover:bg-[#a855f7] text-white font-mono text-sm font-bold px-8 py-4 rounded-full uppercase tracking-wider transition-all duration-300 welcome-hover-button active:scale-95 flex items-center gap-3 w-fit cursor-pointer group shadow-[0_0_20px_rgba(147,51,234,0.5)]"
+                className="survey-cta bg-tertiary hover:bg-tertiary-container text-black font-mono text-xs md:text-sm font-bold px-7 py-4 rounded-2xl uppercase tracking-wider transition-all duration-300 shadow-[0_0_15px_rgba(0,215,208,0.4)] hover:shadow-[0_0_30px_rgba(0,215,208,0.8)] hover:-translate-y-0.5 hover:scale-105 active:scale-95 flex items-center justify-center gap-3 w-fit cursor-pointer group"
               >
                 TOMA LA ENCUESTA
-                <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">
+                <span className="material-symbols-outlined text-base md:text-lg group-hover:translate-x-1 transition-transform">
                   arrow_forward
                 </span>
               </button>
@@ -331,8 +233,8 @@ export default function WelcomePage() {
       </main>
 
       {/* ── FOOTER ── */}
-      <footer className="w-full px-6 md:px-12 py-6 flex justify-end items-center max-w-7xl mx-auto border-t border-white/5 bg-[#0e0e0e]/50 mt-auto">
-        <p className="font-mono text-xs text-[#dcbed4] uppercase tracking-widest text-right m-0">
+      <footer className="w-full px-6 md:px-12 py-6 flex justify-end items-center max-w-7xl mx-auto border-t border-white/5 bg-surface-lowest/50 mt-auto">
+        <p className="font-mono text-xs text-on-surface-variant uppercase tracking-widest text-right m-0">
           SEGUIMOS INNOVANDO <span className="text-white font-bold">PARA TI</span>
         </p>
       </footer>

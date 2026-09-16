@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1330" height="1182" viewBox="0 0 1330 1182">
+  <defs>
+    <linearGradient id="yellowGradient" x1="0" y1="0" x2="0.68" y2="1">
+      <stop offset="0%" stop-color="#FFE000"/>
+      <stop offset="45%" stop-color="#FFC400"/>
+      <stop offset="100%" stop-color="#FF9900"/>
+    </linearGradient>
+    <linearGradient id="cyanGradient" x1="0.75" y1="0" x2="0.18" y2="1">
+      <stop offset="0%" stop-color="#14D8D8"/>
+      <stop offset="48%" stop-color="#08C7E8"/>
+      <stop offset="100%" stop-color="#0697F4"/>
+    </linearGradient>
+    <linearGradient id="magentaGradient" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#FF008F"/>
+      <stop offset="48%" stop-color="#E900D5"/>
+      <stop offset="100%" stop-color="#A900B5"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Left yellow panel -->
+  <path fill="url(#yellowGradient)" d="M 63,34
+    L 304,34
+    C 337,34 360,52 375,82
+    L 645,570
+    L 287,1109
+    L 63,1109
+    Z"/>
+
+  <!-- Right cyan panel -->
+  <path fill="url(#cyanGradient)" d="M 1020,34
+    L 1232,34
+    L 1232,1109
+    L 964,1109
+    L 644,570
+    L 900,101
+    C 921,57 952,34 990,34
+    Z"/>
+
+  <!-- Bottom magenta panel -->
+  <path fill="url(#magentaGradient)" d="M 644,570 L 964,1109 L 287,1109 Z"/>
+</svg>
