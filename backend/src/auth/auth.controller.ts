@@ -1,5 +1,6 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Get, UseGuards, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { VerifyCodeDto } from './dto/verify-code.dto';
@@ -45,5 +46,19 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async completeProfile(@Body() completeProfileDto: CompleteProfileDto) {
     return this.authService.completeProfile(completeProfileDto);
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async getMe(@Request() req: any) {
+    const user = req.user;
+    return {
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+      area: user.area,
+      appRole: user.appRole,
+      position: user.position,
+    };
   }
 }

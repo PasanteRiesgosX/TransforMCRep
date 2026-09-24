@@ -16,7 +16,9 @@ model User {
   password    String
   fullName    String
   area        String
-  role        String
+  position    String   @default("USER")
+  appRoleId   Int      @default(1)
+  appRole     Role     @relation(fields: [appRoleId], references: [id])
   isVerified  Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -34,7 +36,80 @@ model EmailVerification {
 
 
 
+model Role {
+  id    Int    @id @default(autoincrement())
+  code  String @unique
+  name  String
+  users User[]
+}
 
+model Question {
+  id             String   @id @default(uuid())
+  text           String
+  type           String
+  dimension      String?
+  rubricCategory String?
+  weight         Decimal  @default(1)
+  isGate         Boolean  @default(false)
+  scoreEligible  Boolean  @default(true)
+  orderIndex     Int
+  isActive       Boolean  @default(true)
 
+  minValue     Int?
+  maxValue     Int?
+  stepValue    Int?
+  minLabel     String?
+  maxLabel     String?
+  passingValue Int?    // Umbral de aprobación para SLIDER gate
 
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
 
+  options QuestionOption[]
+}
+
+model QuestionOption {
+  id         String   @id @default(uuid())
+  questionId String
+  text       String
+  value      Decimal
+  isPassing  Boolean  @default(false) // Opción aprobatoria para MULTIPLE_CHOICE gate
+  orderIndex Int
+  isActive   Boolean  @default(true)
+  question   Question @relation(fields: [questionId], references: [id])
+}
+
+model SurveyAttempt {
+  id              String    @id @default(uuid())
+  subjectUserId   String
+  evaluatorUserId String
+  evaluationType  String    @default("AUTOEVALUACION")
+  status          String    @default("IN_PROGRESS")
+  currentPage     Int       @default(0)
+  startedAt       DateTime  @default(now())
+  submittedAt     DateTime?
+  payloadJson     String?   @db.NVarChar(Max)
+  aiFeedbackJson  String?   @db.NVarChar(Max)
+  answers         Answer[]
+}
+
+model Answer {
+  id        String @id @default(uuid())
+  attemptId String
+
+  questionId           String
+  questionTextSnapshot String
+  questionTypeSnapshot String
+  dimensionSnapshot    String?
+  weightSnapshot       Decimal
+
+  selectedOptionId    String?
+  optionTextSnapshot  String?
+  optionValueSnapshot Decimal?
+  numericValue        Int?
+  textValue           String?  @db.NVarChar(Max)
+
+  attempt SurveyAttempt @relation(fields: [attemptId], references: [id])
+}

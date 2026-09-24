@@ -11,5 +11,5 @@ export class CompleteProfileDto {
 
   @IsString({ message: 'El cargo debe ser una cadena de texto.' })
   @IsNotEmpty({ message: 'El cargo es requerido.' })
-  role: string;
+  position: string;
 }

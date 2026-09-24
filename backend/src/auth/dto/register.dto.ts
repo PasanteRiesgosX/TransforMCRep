@@ -20,5 +20,5 @@ export class RegisterDto {
 
   @IsString({ message: 'El rol o cargo debe ser una cadena de texto.' })
   @IsNotEmpty({ message: 'El rol o cargo es requerido.' })
-  role: string;
+  position: string;
 }

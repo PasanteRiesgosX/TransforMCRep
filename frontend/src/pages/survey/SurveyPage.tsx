@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import logowImg from '../assets/img/logow.png';
-import CookieMonsterEyes from './CookieMonsterEyes';
+import { useNavigate } from 'react-router-dom';
+import logowImg from '../../assets/img/logow.png';
 
 // Hacker Scramble Effect helper
 class ScrambleEffect {
@@ -79,7 +79,8 @@ class ScrambleEffect {
   }
 }
 
-export default function WelcomePage() {
+export default function SurveyPage() {
+  const navigate = useNavigate();
   const el1Ref = useRef<HTMLHeadingElement | null>(null);
   const el2Ref = useRef<HTMLHeadingElement | null>(null);
 
@@ -116,9 +117,7 @@ export default function WelcomePage() {
   }, []);
 
   const handleStartSurvey = () => {
-    // Placeholder action ready for survey routing
-    console.log('Navegando a la encuesta...');
-    alert('¡Redirigiendo a la encuesta de TransforMC!');
+    navigate('/survey/form');
   };
 
   return (
@@ -150,7 +149,7 @@ export default function WelcomePage() {
             {/* Center Icon Symbol */}
             <div className="relative z-10 self-center my-auto">
               <span className="font-mono text-4xl md:text-5xl text-white opacity-80 glow-text font-bold">
-                {'{}'}
+                {}
               </span>
             </div>
 

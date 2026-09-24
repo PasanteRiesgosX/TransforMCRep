@@ -51,7 +51,7 @@ export class AuthService {
         password: hashedPassword,
         fullName: registerDto.fullName.trim(),
         area: registerDto.area.trim(),
-        role: registerDto.role.trim(),
+        position: registerDto.position.trim(),
         isVerified: false,
       },
     });
@@ -163,6 +163,7 @@ export class AuthService {
     const updatedUser = await this.prisma.user.update({
       where: { id: user.id },
       data: { isVerified: true },
+      include: { appRole: true },
     });
 
     // Invalidar el código consumido para que no pueda volver a usarse
@@ -174,8 +175,9 @@ export class AuthService {
     const payload = {
       sub: updatedUser.id,
       email: updatedUser.email,
-      role: updatedUser.role,
+      position: updatedUser.position,
       area: updatedUser.area,
+      appRole: updatedUser.appRole?.code,
     };
 
     const accessToken = this.jwtService.sign(payload);
@@ -296,6 +298,7 @@ export class AuthService {
       // Aprovisionamiento JIT (Just in Time)
       let user = await this.prisma.user.findUnique({
         where: { email: emailNormalized },
+        include: { appRole: true }
       });
 
       if (!user) {
@@ -308,15 +311,17 @@ export class AuthService {
             password: randomPassword,
             fullName: fullName,
             area: 'Por Definir',
-            role: 'USER',
+            position: 'Por Definir',
             isVerified: true, // Ya viene verificado por Microsoft
-          }
+          },
+          include: { appRole: true }
         });
       } else if (!user.isVerified) {
         // Si existía pero no estaba verificado, lo verificamos porque MS avala el login
         user = await this.prisma.user.update({
           where: { id: user.id },
-          data: { isVerified: true }
+          data: { isVerified: true },
+          include: { appRole: true }
         });
       }
 
@@ -324,8 +329,9 @@ export class AuthService {
       const payload = {
         sub: user.id,
         email: user.email,
-        role: user.role,
+        position: user.position,
         area: user.area,
+        appRole: user.appRole?.code,
       };
 
       const accessToken = this.jwtService.sign(payload);
@@ -365,16 +371,18 @@ export class AuthService {
       where: { id: user.id },
       data: {
         area: completeProfileDto.area.trim(),
-        role: completeProfileDto.role.trim(),
+        position: completeProfileDto.position.trim(),
       },
+      include: { appRole: true }
     });
 
     // Generar nuevo JWT interno con los datos actualizados
     const payload = {
       sub: updatedUser.id,
       email: updatedUser.email,
-      role: updatedUser.role,
+      position: updatedUser.position,
       area: updatedUser.area,
+      appRole: updatedUser.appRole?.code,
     };
 
     const accessToken = this.jwtService.sign(payload);

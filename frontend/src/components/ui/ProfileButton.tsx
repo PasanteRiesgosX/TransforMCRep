@@ -1,27 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-
-interface StoredUser {
-  fullName?: string;
-  email?: string;
-  area?: string;
-  role?: string;
-}
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function ProfileButton() {
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState<StoredUser | null>(null);
+  const { user, logout } = useAuth();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser) as StoredUser);
-      } catch {
-        setUser(null);
-      }
-    }
-
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
@@ -34,7 +19,7 @@ export default function ProfileButton() {
   }, []);
 
   const handleLogout = () => {
-    window.location.href = '/login';
+    logout();
   };
 
   return (
@@ -58,8 +43,8 @@ export default function ProfileButton() {
               <span className="font-body text-sm font-medium text-white">{user?.area || 'No disponible'}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="font-body text-xs text-gray-400">Rol</span>
-              <span className="font-body text-sm font-medium text-[#00D7D0]">{user?.role || 'No disponible'}</span>
+              <span className="font-body text-xs text-gray-400">Cargo</span>
+              <span className="font-body text-sm font-medium text-[#00D7D0]">{user?.position || 'No disponible'}</span>
             </div>
           </div>
           <div className="p-2">

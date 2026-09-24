@@ -6,7 +6,7 @@ import logoImg from '../assets/img/logo.png';
 export default function CompleteProfilePage() {
   const navigate = useNavigate();
   const [area, setArea] = useState('');
-  const [role, setRole] = useState('');
+  const [position, setPosition] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -20,7 +20,7 @@ export default function CompleteProfilePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!area || !role) {
+    if (!area || !position) {
       setError('Debes seleccionar un área y un cargo.');
       return;
     }
@@ -37,14 +37,14 @@ export default function CompleteProfilePage() {
 
       const response = await axios.post(
         `${API_BASE_URL}/auth/complete-profile`,
-        { email: user.email, area, role },
+        { email: user.email, area, position },
         { headers: { Authorization: `Bearer ${token}` } } // Por si aplicamos guards después
       );
 
       // Actualizar localStorage con los nuevos datos
       localStorage.setItem('user', JSON.stringify(response.data.user));
 
-      navigate('/dashboard');
+      navigate('/survey');
     } catch (err: unknown) {
       console.error('Error completando perfil', err);
       const message = axios.isAxiosError(err) && typeof err.response?.data?.message === 'string'
@@ -117,16 +117,16 @@ export default function CompleteProfilePage() {
 
           {/* Cargo */}
           <div className="flex flex-col gap-2 w-full max-w-sm">
-            <label htmlFor="role" className="text-tertiary text-xs font-bold uppercase tracking-wider font-mono text-center">
+            <label htmlFor="position" className="text-tertiary text-xs font-bold uppercase tracking-wider font-mono text-center">
               Cargo
             </label>
             <div className="relative w-full">
               <span aria-hidden="true" className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-primary pointer-events-none">badge</span>
               <select
-                id="role"
+                id="position"
                 className="w-full bg-surface-container-lowest border border-white/15 rounded-lg py-3.5 pl-14 pr-4 text-white font-body text-sm outline-none neon-input appearance-none text-center"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
+                value={position}
+                onChange={(e) => setPosition(e.target.value)}
                 required
                 disabled={loading}
               >

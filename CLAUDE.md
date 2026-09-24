@@ -71,17 +71,24 @@ frontend/src/
 
 Current reusable components:
 
-- `components/layout/UserLayout.tsx`: layout wrapper that renders an `Outlet` for its child routes.
+- `components/layout/UserLayout.tsx`: layout wrapper for normal users.
+- `components/layout/AdminLayout.tsx`: layout wrapper with sidebar for administrators.
 - `components/ui/LogoPlaceholder.tsx`: renders the application logo and accepts `topbar` or `large` variants.
 - `components/ui/ProfileButton.tsx`: user profile control with its dropdown actions.
+- `components/auth/RequireAuth.tsx`: route guard requiring user session.
+- `components/auth/RequireAdmin.tsx`: route guard requiring ADMIN role.
+- `components/admin/QuestionFormModal.tsx`: modal for creating/editing survey questions.
 
 Current pages:
 
 - `pages/LoginPage.tsx`.
 - `pages/AzureCallback.tsx`.
-- `pages/WelcomePage.tsx`.
 - `pages/CompleteProfilePage.tsx`.
-- `pages/CookieMonsterEyes.tsx`: auxiliary interactive component used by the welcome experience.
+- `pages/survey/SurveyPage.tsx`.
+- `pages/survey/SurveyFormPage.tsx`.
+- `pages/survey/ResultsPage.tsx`.
+- `pages/admin/AdminQuestionsPage.tsx`.
+- `pages/CookieMonsterEyes.tsx`: auxiliary interactive component.
 
 ## Routing
 
@@ -89,33 +96,39 @@ The route tree is defined in `frontend/src/App.tsx`:
 
 - `/login`: login screen.
 - `/auth/callback`: Azure authentication callback.
-- `/welcome`: welcome screen rendered inside `UserLayout`.
 - `/complete-profile`: profile completion screen rendered inside `UserLayout`.
+- `/survey`: survey welcome screen inside `UserLayout`.
+- `/survey/form`: survey form placeholder inside `UserLayout`.
+- `/results`: survey results page displaying radar chart and eligibility rank inside `UserLayout`.
+- `/admin/questions`: administration page for configuring questions, inside `AdminLayout` (protected by `RequireAdmin`).
 - Any unknown route redirects to `/login`.
 
-Do not document routes as implemented until they exist in `App.tsx`. At the current state, `/dashboard` and `/profile` are not registered routes.
+Do not document routes as implemented until they exist in `App.tsx`.
 
 ## Backend structure
 
 ```text
 backend/src/
+├── admin/        # admin sub-modules (e.g. questions CRUD)
 ├── auth/         # authentication controller, service, DTOs, guards and strategies
 ├── mail/         # email delivery module and service
 ├── prisma/       # Prisma module and database service
+├── survey/       # survey logic, attempts, canonical payloads, and scoring deterministic engine
 ├── app.module.ts
 ├── app.controller.ts
 ├── app.service.ts
 └── main.ts
 ```
 
-Database schema and migrations are under `backend/prisma/`.
+Database schema and migrations are under `backend/prisma/`. Phase 2 added Gate configurations (`isPassing`, `passingValue`) and Attempt relationships.
 
 Important backend areas:
 
 - `auth/`: registration, login, verification and profile completion flows.
 - `auth/guards/`: JWT protection.
 - `auth/strategies/`: Passport JWT strategy.
-- `auth/dto/`: request validation contracts.
+- `admin/questions/`: CRUD for questions with dynamic validation based on question type (MULTIPLE_CHOICE, SLIDER) and Gate flags.
+- `survey/`: survey submission (`survey.service.ts`), payload canonization, and result scoring (`scoring.service.ts`).
 - `mail/`: verification and application email delivery.
 - `prisma/`: database access boundary.
 
@@ -144,7 +157,9 @@ When adding functionality, place code at the narrowest existing boundary that ow
 
 ## Current status
 
+- **Phase 1 & 2 Completed:** Backend includes full Question Admin CRUD, Survey endpoints, canonical JSON payloads, and a Deterministic Scoring Motor for Ranks/Gates. Frontend includes Admin UI, Survey flows, and Radar Chart Results using `recharts`.
 - The frontend is a React/Vite SPA with route composition in `App.tsx`.
 - The backend is a NestJS API with authentication, mail and Prisma modules.
 - The frontend build currently succeeds with `npm run build` from `frontend/`.
-- Frontend lint has an existing `no-explicit-any` issue in `pages/AzureCallback.tsx`; treat it separately from unrelated changes unless the task concerns that file.
+- Frontend lint has an existing `no-explicit-any` issue in `pages/AzureCallback.tsx` and `AdminQuestionsPage.tsx`; treat them separately from unrelated changes unless the task concerns those files.
+- Backend Jest tests have a pre-existing TSConfig issue (`error TS5011: The common source directory...`). Do not hide or suppress it; it requires framework-level architectural changes.

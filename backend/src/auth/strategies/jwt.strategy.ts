@@ -6,7 +6,8 @@ import { PrismaService } from '../../prisma/prisma.service';
 export interface JwtPayload {
   sub: string;
   email: string;
-  role: string;
+  position: string;
+  appRole: string;
 }
 
 @Injectable()
@@ -23,6 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: JwtPayload) {
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
+      include: { appRole: true },
     });
 
     if (!user) {
@@ -32,6 +34,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return {
+      ...userWithoutPassword,
+      appRole: user.appRole?.code,
+    };
   }
 }

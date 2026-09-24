@@ -70,7 +70,7 @@ Simplemente inserta los roles. Yo insertare los administradores mediante SSMS, e
 
 ### Frontend
 
-- Crea `components/auth/RequireAuth.tsx` y `components/auth/RequireAdmin.tsx` como componentes de ruta (React Router 7). `RequireAdmin` redirige a `/welcome` si el usuario no es admin.
+- Crea `components/auth/RequireAuth.tsx` y `components/auth/RequireAdmin.tsx` como componentes de ruta (React Router 7). `RequireAdmin` redirige a `/welcome` si el usuario no es admin.3333333333333333333333
 - Al completarse el login, si `appRole === 'ADMIN'` redirige a `/admin/questions`; en caso contrario a `/welcome`.
 - Mantén el rol en un contexto de sesión (`contexts/AuthContext.tsx`) alimentado desde `GET /auth/me`. No leas ni decodifiques el JWT en componentes de página.
 

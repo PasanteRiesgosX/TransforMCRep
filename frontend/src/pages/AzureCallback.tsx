@@ -28,10 +28,10 @@ export default function AzureCallback() {
         localStorage.setItem('user', JSON.stringify(user));
 
         // Redirigir según el estado del perfil
-        if (user.area === 'Por Definir' || user.role === 'USER') {
+        if (user.area === 'Por Definir' || user.position === 'Por Definir') {
           navigate('/complete-profile');
         } else {
-          navigate('/welcome');
+          navigate('/survey');
         }
       } catch (err: any) {
         console.error('Error durante la autenticación de Azure', err);

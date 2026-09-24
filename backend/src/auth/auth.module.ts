@@ -7,11 +7,13 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { MailModule } from '../mail/mail.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
+const passportModule = PassportModule.register({ defaultStrategy: 'jwt' });
+
 @Module({
   imports: [
     PrismaModule,
     MailModule,
-    PassportModule,
+    passportModule,
     JwtModule.registerAsync({
       useFactory: () => ({
         secret: process.env.JWT_SECRET || 'super_secret_transformc_key_2026',
@@ -23,6 +25,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
-  exports: [AuthService, JwtModule],
+  exports: [AuthService, JwtModule, passportModule],
 })
 export class AuthModule {}
