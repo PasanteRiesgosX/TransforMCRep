@@ -264,3 +264,29 @@
 .survey-content:has(.survey-cta:hover) .survey-accent-indicator {
   animation: surveyAccentProgress 0.5s ease-in forwards;
 }
+
+/* ── Person Thermometer ── */
+@keyframes personLiquidRise {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(var(--liquid-offset));
+  }
+}
+
+@keyframes personLiquidWave {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@layer components {
+  .person-thermometer-liquid {
+    animation: personLiquidRise 1.8s cubic-bezier(0.22, 1, 0.36, 1) 0.6s forwards;
+    transform: translateY(100%);
+  }
+
+  .person-thermometer-wave {
+    animation: personLiquidWave 3s linear infinite;
+  }
+}

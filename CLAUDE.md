@@ -128,7 +128,7 @@ Important backend areas:
 - `auth/guards/`: JWT protection.
 - `auth/strategies/`: Passport JWT strategy.
 - `admin/questions/`: CRUD for questions with dynamic validation based on question type (MULTIPLE_CHOICE, SLIDER) and Gate flags.
-- `survey/`: survey submission (`survey.service.ts`), payload canonization, and result scoring (`scoring.service.ts`).
+- `survey/`: hexagonal survey workflow with application use cases, repository/provider/realtime ports, Prisma/Groq/Pusher adapters, BullMQ worker, private Pusher channel authorization, and deterministic scoring rules.
 - `mail/`: verification and application email delivery.
 - `prisma/`: database access boundary.
 
@@ -157,9 +157,15 @@ When adding functionality, place code at the narrowest existing boundary that ow
 
 ## Current status
 
-- **Phase 1 & 2 Completed:** Backend includes full Question Admin CRUD, Survey endpoints, canonical JSON payloads, and a Deterministic Scoring Motor for Ranks/Gates. Frontend includes Admin UI, Survey flows, and Radar Chart Results using `recharts`.
+- **Phase 1 & 2 Completed:** Backend includes full Question Admin CRUD, Survey endpoints, canonical JSON payloads, and a Deterministic Scoring Motor for Ranks/Gates. Frontend includes Admin UI, Survey flows with incremental page-by-page saving, and Results display.
+- **AI Feedback:** Survey submission stores its canonical payload and enqueues feedback on BullMQ/Redis. A worker selects from configured Groq models, validates the response, and stores feedback with a processing status; deterministic results remain available independently. Pusher notifies the authenticated user's private channel when feedback completes or fails, and the results page refreshes automatically.
+- **Expanded Canonical Payload:** `survey-payload.builder.ts` now includes `questionText` and `selectedOptionText` in each answer entry of `payloadJson`, providing full semantic context for AI analysis.
+- **Updated Scoring Ranges:** The deterministic motor now uses four buyer-persona tiers: `EXPLORADOR` (0–25%), `USUARIO` (25.01–50%), `IMPULSOR` (50.01–75%), `EMBAJADOR` (75.01–100%). Old ranges (`PRINCIPIANTE`, `INTERMEDIO`, `AVANZADO`) are retired.
+- **Results UI Refactored:** `ResultsPage.tsx` uses a two-column layout. The left column shows the user's tier with an icon and description, plus a person-silhouette SVG thermometer that fills with animated gradient liquid on page load. The right column displays five AI-scored competency bars (Conocimiento general, Uso de herramientas, Identificación de oportunidades, Uso responsable, Disposición para impulsar).
+- **Person Thermometer Animations:** Custom CSS keyframes (`personLiquidRise`, `personLiquidWave`) are defined in `index.css` inside `@layer components`. The liquid starts empty and rises to the user's score level after a 0.6s delay, with a continuous wave shimmer on the surface.
+- **Environment Variables:** `GROQ_API_KEY`, `REDIS_URL`, and Pusher server credentials (`PUSHER_APP_ID`, `PUSHER_KEY`, `PUSHER_SECRET`, `PUSHER_CLUSTER`) are configured in `backend/.env`; `VITE_PUSHER_KEY` and `VITE_PUSHER_CLUSTER` configure the frontend. Without Pusher credentials, realtime updates are disabled; without Groq, feedback remains unavailable; without Redis, the survey still persists but AI enqueueing fails.
 - The frontend is a React/Vite SPA with route composition in `App.tsx`.
-- The backend is a NestJS API with authentication, mail and Prisma modules.
+- The backend is a NestJS API with authentication, mail, Prisma, and AI feedback modules.
 - The frontend build currently succeeds with `npm run build` from `frontend/`.
 - Frontend lint has an existing `no-explicit-any` issue in `pages/AzureCallback.tsx` and `AdminQuestionsPage.tsx`; treat them separately from unrelated changes unless the task concerns those files.
 - Backend Jest tests have a pre-existing TSConfig issue (`error TS5011: The common source directory...`). Do not hide or suppress it; it requires framework-level architectural changes.

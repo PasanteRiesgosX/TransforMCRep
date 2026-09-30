@@ -1,4 +1,11 @@
-export function buildSurveyPayload(attempt: any, answers: any[]) {
+import { SurveyAnswerRecord, SurveyAttemptData } from './domain/survey-models';
+
+type PayloadAnswer = SurveyAnswerRecord & { computedNormalizedValue: number | null };
+
+export function buildSurveyPayload(
+  attempt: SurveyAttemptData & { submittedAt: Date },
+  answers: PayloadAnswer[],
+) {
   return {
     attemptId: attempt.id,
     subjectUserId: attempt.subjectUserId,
@@ -9,7 +16,7 @@ export function buildSurveyPayload(attempt: any, answers: any[]) {
       let text: string | null = null;
 
       if (a.questionTypeSnapshot === 'MULTIPLE_CHOICE') {
-        val = a.optionValueSnapshot ? Number(a.optionValueSnapshot) : null;
+        val = a.optionValueSnapshot !== null ? Number(a.optionValueSnapshot) : null;
       } else if (a.questionTypeSnapshot === 'SLIDER') {
         // Calculate normalized value: (numericValue - minValue) / (maxValue - minValue)
         // Ensure values exist on the question (they are not saved in Answer right now, but for this builder we will pass them or compute them in the service before calling this builder)

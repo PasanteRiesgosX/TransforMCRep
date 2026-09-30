@@ -92,6 +92,7 @@ model SurveyAttempt {
   submittedAt     DateTime?
   payloadJson     String?   @db.NVarChar(Max)
   aiFeedbackJson  String?   @db.NVarChar(Max)
+  aiFeedbackStatus String  @default("NOT_REQUESTED") @db.NVarChar(20)
   answers         Answer[]
 }
 
