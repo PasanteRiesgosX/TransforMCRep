@@ -33,9 +33,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       );
     }
 
-    const { password, ...userWithoutPassword } = user;
     return {
-      ...userWithoutPassword,
+      ...user,
       appRole: user.appRole?.code,
     };
   }

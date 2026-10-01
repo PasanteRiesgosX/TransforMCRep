@@ -6,6 +6,8 @@ const validResult = {
   identificacionOportunidades: 70,
   usoResponsable: 90,
   disposicionImpulsar: 85,
+  superpoderes: '¡Demuestras un excelente nivel para liderar la innovación tecnológica!',
+  siguienteReto: 'Prueba incorporar automatizaciones en tus tareas semanales.',
 };
 
 describe('parseAiFeedbackResult', () => {

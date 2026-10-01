@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { clearAdminChatSessions } from '../services/adminChat.service';
 
 export interface User {
   id: string;
@@ -33,6 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const refreshUser = async () => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
+      clearAdminChatSessions();
       setUser(null);
       setLoading(false);
       return;
@@ -50,6 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
       localStorage.removeItem('accessToken');
       localStorage.removeItem('user');
+      clearAdminChatSessions();
     } finally {
       setLoading(false);
     }
@@ -62,6 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('user');
+    clearAdminChatSessions();
     setUser(null);
   };
 

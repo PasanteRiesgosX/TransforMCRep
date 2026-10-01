@@ -11,9 +11,9 @@ import { GENERATE_FEEDBACK_JOB, GenerateFeedbackJob, SURVEY_FEEDBACK_QUEUE } fro
 
 @Injectable()
 @Processor(SURVEY_FEEDBACK_QUEUE, {
-  concurrency: 2,
-  drainDelay: 30,
-  stalledInterval: 60_000,
+  concurrency: 1,
+  drainDelay: 600,
+  stalledInterval: 600_000,
 })
 export class SurveyFeedbackWorker extends WorkerHost {
   private readonly logger = new Logger(SurveyFeedbackWorker.name);

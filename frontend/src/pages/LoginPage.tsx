@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import logoImg from '../assets/img/logo.png';
 const quotes = [
   { text: '"La IA es la nueva electricidad."', author: '— Andrew Ng' },
@@ -14,9 +16,23 @@ const quotes = [
 ];
 
 export default function LoginPage() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
   const [quoteFade, setQuoteFade] = useState(true);
   const [logoBounceKey, setLogoBounceKey] = useState(0);
+
+  useEffect(() => {
+    if (!loading && user) {
+      if (user.area === 'Por Definir' || user.position === 'Por Definir') {
+        navigate('/complete-profile', { replace: true });
+      } else if (user.appRole === 'ADMIN') {
+        navigate('/admin/questions', { replace: true });
+      } else {
+        navigate('/survey', { replace: true });
+      }
+    }
+  }, [user, loading, navigate]);
 
   useEffect(() => {
     const interval = setInterval(() => {

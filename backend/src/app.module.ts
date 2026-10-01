@@ -8,6 +8,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
 import { SurveyModule } from './survey/survey.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { SurveyModule } from './survey/survey.module';
     AuthModule,
     AdminModule,
     SurveyModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

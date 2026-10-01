@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Pusher from 'pusher-js';
-import { Brain, LineChart, Lightbulb, Shield, Crown, Sparkles, User, Rocket, Compass } from 'lucide-react';
+import { Brain, LineChart, Lightbulb, Shield, Crown, Sparkles, User, Rocket, Compass, Zap } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 
 interface AiFeedbackResult {
   conocimientoGeneral: number;
@@ -10,6 +11,8 @@ interface AiFeedbackResult {
   identificacionOportunidades: number;
   usoResponsable: number;
   disposicionImpulsar: number;
+  superpoderes?: string;
+  siguienteReto?: string;
 }
 
 interface ResultsData {
@@ -76,10 +79,12 @@ export default function ResultsPage() {
     const channel = pusher.subscribe(channelName);
     const refreshResults = () => void fetchResults();
     channel.bind('ai-feedback-updated', refreshResults);
+    channel.bind('pusher:subscription_succeeded', refreshResults);
 
     return () => {
       isActive = false;
       channel.unbind('ai-feedback-updated', refreshResults);
+      channel.unbind('pusher:subscription_succeeded', refreshResults);
       pusher.unsubscribe(channelName);
       pusher.disconnect();
     };
@@ -119,11 +124,11 @@ export default function ResultsPage() {
   // Helper functions for UI
   const getRangeIcon = (range: string | null) => {
     switch (range) {
-      case 'EXPLORADOR': return <Compass className="w-12 h-12 text-orange-400" />;
-      case 'USUARIO': return <User className="w-12 h-12 text-blue-400" />;
-      case 'IMPULSOR': return <Rocket className="w-12 h-12 text-green-400" />;
-      case 'EMBAJADOR': return <Crown className="w-12 h-12 text-yellow-400" />;
-      default: return <Sparkles className="w-12 h-12 text-white" />;
+      case 'EXPLORADOR': return <Compass className="w-8 h-8 text-orange-400" />;
+      case 'USUARIO': return <User className="w-8 h-8 text-blue-400" />;
+      case 'IMPULSOR': return <Rocket className="w-8 h-8 text-green-400" />;
+      case 'EMBAJADOR': return <Crown className="w-8 h-8 text-yellow-400" />;
+      default: return <Sparkles className="w-8 h-8 text-white" />;
     }
   };
 
@@ -147,26 +152,26 @@ export default function ResultsPage() {
       : null;
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-8 flex flex-col gap-8 animate-fade-in pb-20">
+    <div className="max-w-6xl mx-auto px-4 py-2 md:py-4 flex flex-col gap-4 animate-fade-in">
       
-      {/* 2-Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start mt-8">
+      {/* 2-Column Compact Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 items-stretch">
         
         {/* LEFT COLUMN: Rank & Thermometer */}
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-4">
           
           {/* Header Rank Card */}
-          <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 shadow-lg flex flex-col gap-4">
-            <p className="text-gray-400 font-bold uppercase tracking-widest text-sm">Tu rango es</p>
-            <div className="flex items-center gap-6">
-              <div className="bg-[#2a2a2a] p-4 rounded-2xl">
+          <div className="bg-[#1a1a1a] border border-white/10 rounded-xl p-4 shadow-md flex flex-col gap-2">
+            <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">Tu rango es</p>
+            <div className="flex items-center gap-4">
+              <div className="bg-[#2a2a2a] p-3 rounded-xl shrink-0">
                 {getRangeIcon(data.range)}
               </div>
-              <div>
-                <h2 className={`text-4xl font-display font-black mb-1 ${getRangeColorText(data.range)}`}>
+              <div className="min-w-0">
+                <h2 className={`text-2xl md:text-3xl font-display font-black ${getRangeColorText(data.range)}`}>
                   {data.range}
                 </h2>
-                <p className="text-gray-300 text-sm leading-relaxed">
+                <p className="text-gray-300 text-xs leading-relaxed line-clamp-2">
                   {data.description}
                 </p>
               </div>
@@ -174,13 +179,13 @@ export default function ResultsPage() {
           </div>
 
           {/* Person-Silhouette Thermometer */}
-          <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-8 shadow-lg flex items-center justify-center relative min-h-[400px]">
-            <p className="absolute top-4 left-4 text-gray-400 font-bold text-sm uppercase tracking-widest">Medidor Global</p>
+          <div className="bg-[#1a1a1a] border border-white/10 rounded-xl p-4 shadow-md flex items-center justify-center relative min-h-[290px] flex-1">
+            <p className="absolute top-3 left-4 text-gray-400 font-bold text-xs uppercase tracking-widest">Medidor Global</p>
 
-            <div className="flex items-end gap-8 h-[340px]">
+            <div className="flex items-end gap-6 h-[250px] mt-3">
 
               {/* Person Silhouette Container */}
-              <div className="relative w-32 h-full">
+              <div className="relative w-28 h-full">
                 <svg
                   viewBox="0 0 200 400"
                   className="w-full h-full"
@@ -271,42 +276,42 @@ export default function ResultsPage() {
 
                 {/* Score label on top of the silhouette */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="text-3xl font-display font-black text-white drop-shadow-lg">{score}%</span>
+                  <span className="text-2xl font-display font-black text-white drop-shadow-lg">{score}%</span>
                 </div>
               </div>
 
               {/* Threshold Labels */}
-              <div className="flex flex-col justify-between h-full py-4 relative">
+              <div className="flex flex-col justify-between h-full py-2 relative text-xs">
 
-                <div className="flex items-center gap-4">
-                  <div className={`w-4 h-[2px] ${score >= 75 ? 'bg-yellow-400' : 'bg-gray-600'}`}></div>
+                <div className="flex items-center gap-3">
+                  <div className={`w-3 h-[2px] ${score >= 75 ? 'bg-yellow-400' : 'bg-gray-600'}`}></div>
                   <div>
-                    <p className={`font-bold text-sm ${score >= 75 ? 'text-yellow-400' : 'text-gray-500'}`}>EMBAJADOR</p>
-                    <p className="text-xs text-gray-500">Referente</p>
+                    <p className={`font-bold text-xs ${score >= 75 ? 'text-yellow-400' : 'text-gray-500'}`}>EMBAJADOR</p>
+                    <p className="text-[10px] text-gray-500">Referente</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                  <div className={`w-4 h-[2px] ${score >= 50 && score < 75 ? 'bg-green-400' : 'bg-gray-600'}`}></div>
+                <div className="flex items-center gap-3">
+                  <div className={`w-3 h-[2px] ${score >= 50 && score < 75 ? 'bg-green-400' : 'bg-gray-600'}`}></div>
                   <div>
-                    <p className={`font-bold text-sm ${score >= 50 && score < 75 ? 'text-green-400' : 'text-gray-500'}`}>IMPULSOR</p>
-                    <p className="text-xs text-gray-500">Avanzado</p>
+                    <p className={`font-bold text-xs ${score >= 50 && score < 75 ? 'text-green-400' : 'text-gray-500'}`}>IMPULSOR</p>
+                    <p className="text-[10px] text-gray-500">Avanzado</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                  <div className={`w-4 h-[2px] ${score >= 25 && score < 50 ? 'bg-blue-400' : 'bg-gray-600'}`}></div>
+                <div className="flex items-center gap-3">
+                  <div className={`w-3 h-[2px] ${score >= 25 && score < 50 ? 'bg-blue-400' : 'bg-gray-600'}`}></div>
                   <div>
-                    <p className={`font-bold text-sm ${score >= 25 && score < 50 ? 'text-blue-400' : 'text-gray-500'}`}>USUARIO</p>
-                    <p className="text-xs text-gray-500">Intermedio</p>
+                    <p className={`font-bold text-xs ${score >= 25 && score < 50 ? 'text-blue-400' : 'text-gray-500'}`}>USUARIO</p>
+                    <p className="text-[10px] text-gray-500">Intermedio</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                  <div className={`w-4 h-[2px] ${score < 25 ? 'bg-orange-400' : 'bg-gray-600'}`}></div>
+                <div className="flex items-center gap-3">
+                  <div className={`w-3 h-[2px] ${score < 25 ? 'bg-orange-400' : 'bg-gray-600'}`}></div>
                   <div>
-                    <p className={`font-bold text-sm ${score < 25 ? 'text-orange-400' : 'text-gray-500'}`}>EXPLORADOR</p>
-                    <p className="text-xs text-gray-500">Básico</p>
+                    <p className={`font-bold text-xs ${score < 25 ? 'text-orange-400' : 'text-gray-500'}`}>EXPLORADOR</p>
+                    <p className="text-[10px] text-gray-500">Básico</p>
                   </div>
                 </div>
 
@@ -317,102 +322,125 @@ export default function ResultsPage() {
           
         </div>
 
-        {/* RIGHT COLUMN: AI Progress Bars */}
-        <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-8 shadow-lg flex flex-col h-full">
-          <div className="mb-8">
-            <h3 className="text-2xl font-display font-bold text-white">Tu perfil de competencias</h3>
-            <p className="text-gray-400 text-sm mt-2">
-              {ai ? 'Analizado por Inteligencia Artificial basado en tus respuestas detalladas.' : aiStatusMessage ?? 'Feedback de IA no disponible.'}
-            </p>
+        {/* RIGHT COLUMN: AI Progress Bars & Superpowers */}
+        <div className="flex flex-col gap-4">
+  {/* Competency Card */}
+  <div className="bg-[#1a1a1a] border border-white/10 rounded-xl p-4 md:p-5 shadow-md flex flex-col gap-4 h-full">
+    <div className="flex flex-col gap-3">
+      <div>
+        <h3 className="text-lg font-display font-bold text-white">Tu perfil de competencias</h3>
+        <p className="text-gray-400 text-xs mt-0.5">
+          {ai ? 'Analizado por Inteligencia Artificial basado en tus respuestas.' : aiStatusMessage ?? 'Feedback de IA no disponible.'}
+        </p>
+      </div>
+      <div className="flex flex-col gap-2.5">
+        {/* Row 1 */}
+        <div className="flex items-center gap-3">
+          <div className="bg-purple-900/30 p-2 rounded-full shrink-0">
+            <Brain className="w-4 h-4 text-purple-400" />
           </div>
-
-          <div className="flex flex-col gap-8">
-            
-            {/* Row 1 */}
-            <div className="flex items-center gap-4">
-              <div className="bg-purple-900/30 p-3 rounded-full">
-                <Brain className="w-6 h-6 text-purple-400" />
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between mb-2">
-                  <span className="text-white font-semibold">Conocimiento general</span>
-                  <span className="text-purple-400 font-bold">{ai ? `${ai.conocimientoGeneral}%` : '—'}</span>
-                </div>
-                <div className="h-3 w-full bg-[#2a2a2a] rounded-full overflow-hidden">
-                  <div className="h-full bg-purple-500 rounded-full transition-all duration-1000" style={{ width: `${ai?.conocimientoGeneral ?? 0}%` }}></div>
-                </div>
-              </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex justify-between mb-1 text-xs">
+              <span className="text-white font-medium truncate">Conocimiento general</span>
+              <span className="text-purple-400 font-bold ml-2">{ai ? `${ai.conocimientoGeneral}%` : '—'}</span>
             </div>
-
-            {/* Row 2 */}
-            <div className="flex items-center gap-4">
-              <div className="bg-blue-900/30 p-3 rounded-full">
-                <LineChart className="w-6 h-6 text-blue-400" />
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between mb-2">
-                  <span className="text-white font-semibold">Uso de herramientas</span>
-                  <span className="text-blue-400 font-bold">{ai ? `${ai.usoHerramientas}%` : '—'}</span>
-                </div>
-                <div className="h-3 w-full bg-[#2a2a2a] rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-500 rounded-full transition-all duration-1000" style={{ width: `${ai?.usoHerramientas ?? 0}%` }}></div>
-                </div>
-              </div>
+            <div className="h-2 w-full bg-[#2a2a2a] rounded-full overflow-hidden">
+              <div className="h-full bg-purple-500 rounded-full transition-all duration-1000" style={{ width: `${ai?.conocimientoGeneral ?? 0}%` }}></div>
             </div>
-
-            {/* Row 3 */}
-            <div className="flex items-center gap-4">
-              <div className="bg-green-900/30 p-3 rounded-full">
-                <Lightbulb className="w-6 h-6 text-green-400" />
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between mb-2">
-                  <span className="text-white font-semibold">Identificación de oportunidades</span>
-                  <span className="text-green-400 font-bold">{ai ? `${ai.identificacionOportunidades}%` : '—'}</span>
-                </div>
-                <div className="h-3 w-full bg-[#2a2a2a] rounded-full overflow-hidden">
-                  <div className="h-full bg-green-500 rounded-full transition-all duration-1000" style={{ width: `${ai?.identificacionOportunidades ?? 0}%` }}></div>
-                </div>
-              </div>
-            </div>
-
-            {/* Row 4 */}
-            <div className="flex items-center gap-4">
-              <div className="bg-orange-900/30 p-3 rounded-full">
-                <Shield className="w-6 h-6 text-orange-400" />
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between mb-2">
-                  <span className="text-white font-semibold">Uso responsable</span>
-                  <span className="text-orange-400 font-bold">{ai ? `${ai.usoResponsable}%` : '—'}</span>
-                </div>
-                <div className="h-3 w-full bg-[#2a2a2a] rounded-full overflow-hidden">
-                  <div className="h-full bg-orange-500 rounded-full transition-all duration-1000" style={{ width: `${ai?.usoResponsable ?? 0}%` }}></div>
-                </div>
-              </div>
-            </div>
-
-            {/* Row 5 */}
-            <div className="flex items-center gap-4">
-              <div className="bg-pink-900/30 p-3 rounded-full">
-                <Crown className="w-6 h-6 text-pink-400" />
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between mb-2">
-                  <span className="text-white font-semibold">Disposición para impulsar</span>
-                  <span className="text-pink-400 font-bold">{ai ? `${ai.disposicionImpulsar}%` : '—'}</span>
-                </div>
-                <div className="h-3 w-full bg-[#2a2a2a] rounded-full overflow-hidden">
-                  <div className="h-full bg-pink-500 rounded-full transition-all duration-1000" style={{ width: `${ai?.disposicionImpulsar ?? 0}%` }}></div>
-                </div>
-              </div>
-            </div>
-
           </div>
         </div>
+        {/* Row 2 */}
+        <div className="flex items-center gap-3">
+          <div className="bg-blue-900/30 p-2 rounded-full shrink-0">
+            <LineChart className="w-4 h-4 text-blue-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex justify-between mb-1 text-xs">
+              <span className="text-white font-medium truncate">Uso de herramientas</span>
+              <span className="text-blue-400 font-bold ml-2">{ai ? `${ai.usoHerramientas}%` : '—'}</span>
+            </div>
+            <div className="h-2 w-full bg-[#2a2a2a] rounded-full overflow-hidden">
+              <div className="h-full bg-blue-500 rounded-full transition-all duration-1000" style={{ width: `${ai?.usoHerramientas ?? 0}%` }}></div>
+            </div>
+          </div>
+        </div>
+        {/* Row 3 */}
+        <div className="flex items-center gap-3">
+          <div className="bg-green-900/30 p-2 rounded-full shrink-0">
+            <Lightbulb className="w-4 h-4 text-green-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex justify-between mb-1 text-xs">
+              <span className="text-white font-medium truncate">Identificación de oportunidades</span>
+              <span className="text-green-400 font-bold ml-2">{ai ? `${ai.identificacionOportunidades}%` : '—'}</span>
+            </div>
+            <div className="h-2 w-full bg-[#2a2a2a] rounded-full overflow-hidden">
+              <div className="h-full bg-green-500 rounded-full transition-all duration-1000" style={{ width: `${ai?.identificacionOportunidades ?? 0}%` }}></div>
+            </div>
+          </div>
+        </div>
+        {/* Row 4 */}
+        <div className="flex items-center gap-3">
+          <div className="bg-orange-900/30 p-2 rounded-full shrink-0">
+            <Shield className="w-4 h-4 text-orange-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex justify-between mb-1 text-xs">
+              <span className="text-white font-medium truncate">Uso responsable</span>
+              <span className="text-orange-400 font-bold ml-2">{ai ? `${ai.usoResponsable}%` : '—'}</span>
+            </div>
+            <div className="h-2 w-full bg-[#2a2a2a] rounded-full overflow-hidden">
+              <div className="h-full bg-orange-500 rounded-full transition-all duration-1000" style={{ width: `${ai?.usoResponsable ?? 0}%` }}></div>
+            </div>
+          </div>
+        </div>
+        {/* Row 5 */}
+        <div className="flex items-center gap-3">
+          <div className="bg-pink-900/30 p-2 rounded-full shrink-0">
+            <Crown className="w-4 h-4 text-pink-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex justify-between mb-1 text-xs">
+              <span className="text-white font-medium truncate">Disposición para impulsar</span>
+              <span className="text-pink-400 font-bold ml-2">{ai ? `${ai.disposicionImpulsar}%` : '—'}</span>
+            </div>
+            <div className="h-2 w-full bg-[#2a2a2a] rounded-full overflow-hidden">
+              <div className="h-full bg-pink-500 rounded-full transition-all duration-1000" style={{ width: `${ai?.disposicionImpulsar ?? 0}%` }}></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {/* Superpowers Card */}
+  <div className="bg-[#1a1a1a] border border-white/10 rounded-xl p-4 md:p-5 shadow-md flex flex-col gap-4 h-full">
+    <div className="flex items-center gap-2">
+      <Zap className="w-4 h-4 text-pink-400" />
+      <h4 className="text-xs font-bold uppercase tracking-wider text-white">Tus superpoderes de la I.A</h4>
+    </div>
+    <div className="text-xs text-slate-200 leading-relaxed bg-[#121212] border border-white/10 rounded-lg p-3 italic">
+      {ai?.superpoderes || (aiStatusMessage ?? 'Analizando tus respuestas para descubrir tus superpoderes en Inteligencia Artificial...')}
+    </div>
+    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-950/60 to-purple-950/60 border border-[#00D7D0]/30 text-[11px] font-semibold text-[#7DE5DF] mt-auto">
+      <Sparkles className="w-3.5 h-3.5" />
+      <span>Este mensaje es único, fue generado en base a tus respuestas usando I.A</span>
+    </div>
+  </div>
+</div>
 
+      </div>
+
+      {/* Siguiente Button */}
+      <div className="mt-8 flex justify-end">
+        <Link 
+          to="/recommendations"
+          className="bg-white text-black px-8 py-3 rounded-full font-bold hover:bg-gray-200 transition-colors"
+        >
+          SIGUIENTE
+        </Link>
       </div>
 
     </div>
   );
 }
+

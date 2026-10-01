@@ -11,6 +11,8 @@ import AdminQuestionsPage from './pages/admin/AdminQuestionsPage';
 import SurveyPage from './pages/survey/SurveyPage';
 import SurveyFormPage from './pages/survey/SurveyFormPage';
 import ResultsPage from './pages/survey/ResultsPage';
+import RecommendationsPage from './pages/survey/RecommendationsPage';
+import InitiativePage from './pages/survey/InitiativePage';
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
               <Route path="/survey" element={<SurveyPage />} />
               <Route path="/survey/form" element={<SurveyFormPage />} />
               <Route path="/results" element={<ResultsPage />} />
+              <Route path="/recommendations" element={<RecommendationsPage />} />
+              <Route path="/initiative" element={<InitiativePage />} />
             </Route>
 
             {/* Admin routes */}

@@ -1,8 +1,18 @@
-import { BadRequestException, Body, Controller, ForbiddenException, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  ForbiddenException,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../../../auth/guards/jwt-auth.guard';
 import { REALTIME_FEEDBACK } from '../../ports/realtime-feedback.port';
 import type { RealtimeFeedbackPort } from '../../ports/realtime-feedback.port';
-import { Inject } from '@nestjs/common';
 
 @Controller('survey/realtime')
 @UseGuards(JwtAuthGuard)
@@ -13,6 +23,7 @@ export class PusherAuthController {
   ) {}
 
   @Post('auth')
+  @HttpCode(HttpStatus.OK)
   authorizePrivateChannel(@Request() request: any, @Body() body: unknown) {
     if (typeof body !== 'object' || body === null) {
       throw new BadRequestException('Invalid Pusher authorization payload');

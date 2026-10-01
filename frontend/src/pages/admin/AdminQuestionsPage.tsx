@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { questionsService } from '../../services/questions.service';
 import QuestionFormModal from '../../components/admin/QuestionFormModal';
 import type { QuestionFormData } from '../../components/admin/QuestionFormModal';
-import { Plus, Edit2, Trash2, GripVertical, CheckCircle2, XCircle } from 'lucide-react';
+import AdminChatPanel from '../../components/admin/AdminChatPanel';
+import { Plus, Edit2, Trash2, GripVertical, CheckCircle2, XCircle, Bot } from 'lucide-react';
 import clsx from 'clsx';
 
 export default function AdminQuestionsPage() {
@@ -11,6 +12,7 @@ export default function AdminQuestionsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [modalData, setModalData] = useState<any | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
     loadQuestions();
@@ -93,13 +95,23 @@ export default function AdminQuestionsPage() {
           <h1 className="text-3xl font-bold font-display text-white mb-2">Administración de Preguntas</h1>
           <p className="text-gray-400 font-body">Configura el banco de preguntas para la evaluación.</p>
         </div>
-        <button 
-          onClick={() => handleOpenModal()}
-          className="bg-[#00D7D0] hover:bg-[#00b5af] text-black font-bold py-2.5 px-5 rounded-lg flex items-center gap-2 transition-colors"
-        >
-          <Plus size={20} />
-          Nueva Pregunta
-        </button>
+        <div className="flex shrink-0 items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setIsChatOpen(true)}
+            className="flex items-center gap-2 rounded-lg border border-[#00D7D0]/50 px-4 py-2.5 font-semibold text-[#7DE5DF] transition-colors hover:bg-[#00D7D0]/10"
+          >
+            <Bot size={19} aria-hidden="true" />
+            Chatbot
+          </button>
+          <button 
+            onClick={() => handleOpenModal()}
+            className="bg-[#00D7D0] hover:bg-[#00b5af] text-black font-bold py-2.5 px-5 rounded-lg flex items-center gap-2 transition-colors"
+          >
+            <Plus size={20} />
+            Nueva Pregunta
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 overflow-auto bg-[#1a1a1a] border border-white/10 rounded-xl">
@@ -200,6 +212,7 @@ export default function AdminQuestionsPage() {
           isLoading={isSaving}
         />
       )}
+      <AdminChatPanel isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
     </div>
   );
 }

@@ -1,13 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function AzureCallback() {
   const navigate = useNavigate();
+  const { refreshUser } = useAuth();
   const [error, setError] = useState<string | null>(null);
+  const hasProcessedRef = useRef(false);
 
   useEffect(() => {
     const handleCallback = async () => {
+      if (hasProcessedRef.current) return;
+      hasProcessedRef.current = true;
+
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
 
@@ -18,20 +24,25 @@ export default function AzureCallback() {
 
       try {
         // Enviar el code al backend
-        const API_BASE_URL = 'http://localhost:3000'; // Ajustar según entorno
+        const API_BASE_URL = 'http://localhost:3000';
         const response = await axios.post(`${API_BASE_URL}/auth/azure-callback`, { code });
 
         const { accessToken, user } = response.data;
 
-        // Guardar token y usuario
+        // Guardar token y usuario en localStorage
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('user', JSON.stringify(user));
 
-        // Redirigir según el estado del perfil
+        // Actualizar el contexto global de autenticación antes de navegar
+        await refreshUser();
+
+        // Redirigir según el estado del perfil y el rol
         if (user.area === 'Por Definir' || user.position === 'Por Definir') {
-          navigate('/complete-profile');
+          navigate('/complete-profile', { replace: true });
+        } else if (user.appRole === 'ADMIN') {
+          navigate('/admin/questions', { replace: true });
         } else {
-          navigate('/survey');
+          navigate('/survey', { replace: true });
         }
       } catch (err: any) {
         console.error('Error durante la autenticación de Azure', err);
@@ -40,7 +51,7 @@ export default function AzureCallback() {
     };
 
     handleCallback();
-  }, [navigate]);
+  }, [navigate, refreshUser]);
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-6" style={{ backgroundColor: '#0e0e0e', color: 'white' }}>

@@ -10,6 +10,8 @@ const feedback: AiFeedbackResult = {
   identificacionOportunidades: 70,
   usoResponsable: 90,
   disposicionImpulsar: 85,
+  superpoderes: '¡Tus superpoderes de IA están en marcha!',
+  siguienteReto: 'Prueba incorporar automatizaciones en tus tareas semanales.',
 };
 
 function createSelector(generateFeedback: jest.Mock) {

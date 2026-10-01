@@ -8,6 +8,7 @@ This file provides repository context for coding agents working on TransforMCRep
 - `frontend/`: React single-page application built with Vite and TypeScript.
 - `docker-compose.yml`: local SQL Server service.
 - `GUIA_PRUEBAS.md`: project testing guidance.
+- `LINEAMIENTOS_EVALUACION.md`: official methodology & evaluation guidelines document formatted for Chatbot / AI Agent ingestion.
 
 ## visual changes
 - Important: For visual changes (implementing frontend, new pages, new buttons, change the position of visual componentes). You must check the @FRONTEND_CODING_STANDARDS.md
@@ -40,7 +41,6 @@ npm run preview
 - TypeScript.
 - Prisma 7 with SQL Server adapter.
 - JWT and Passport authentication.
-- Nodemailer and Nest mailer integration.
 - Jest for unit and end-to-end tests.
 - Oxlint for linting.
 
@@ -88,7 +88,6 @@ Current pages:
 - `pages/survey/SurveyFormPage.tsx`.
 - `pages/survey/ResultsPage.tsx`.
 - `pages/admin/AdminQuestionsPage.tsx`.
-- `pages/CookieMonsterEyes.tsx`: auxiliary interactive component.
 
 ## Routing
 
@@ -111,7 +110,6 @@ Do not document routes as implemented until they exist in `App.tsx`.
 backend/src/
 ├── admin/        # admin sub-modules (e.g. questions CRUD)
 ├── auth/         # authentication controller, service, DTOs, guards and strategies
-├── mail/         # email delivery module and service
 ├── prisma/       # Prisma module and database service
 ├── survey/       # survey logic, attempts, canonical payloads, and scoring deterministic engine
 ├── app.module.ts
@@ -124,12 +122,11 @@ Database schema and migrations are under `backend/prisma/`. Phase 2 added Gate c
 
 Important backend areas:
 
-- `auth/`: registration, login, verification and profile completion flows.
+- `auth/`: Microsoft Entra ID callback, JWT session and profile completion.
 - `auth/guards/`: JWT protection.
 - `auth/strategies/`: Passport JWT strategy.
 - `admin/questions/`: CRUD for questions with dynamic validation based on question type (MULTIPLE_CHOICE, SLIDER) and Gate flags.
 - `survey/`: hexagonal survey workflow with application use cases, repository/provider/realtime ports, Prisma/Groq/Pusher adapters, BullMQ worker, private Pusher channel authorization, and deterministic scoring rules.
-- `mail/`: verification and application email delivery.
 - `prisma/`: database access boundary.
 
 ## Application boundaries

@@ -4,9 +4,11 @@ export interface AiFeedbackResult {
   identificacionOportunidades: number;
   usoResponsable: number;
   disposicionImpulsar: number;
+  superpoderes: string;
+  siguienteReto: string;
 }
 
-const aiFeedbackKeys: (keyof AiFeedbackResult)[] = [
+const aiFeedbackKeys: (keyof Omit<AiFeedbackResult, 'superpoderes' | 'siguienteReto'>)[] = [
   'conocimientoGeneral',
   'usoHerramientas',
   'identificacionOportunidades',
@@ -20,10 +22,6 @@ export function parseAiFeedbackResult(value: unknown): AiFeedbackResult {
   }
 
   const result = value as Record<string, unknown>;
-  const keys = Object.keys(result);
-  if (keys.length !== aiFeedbackKeys.length || aiFeedbackKeys.some(key => !keys.includes(key))) {
-    throw new Error('AI feedback has an unexpected shape');
-  }
 
   for (const key of aiFeedbackKeys) {
     const score = result[key];
@@ -32,5 +30,21 @@ export function parseAiFeedbackResult(value: unknown): AiFeedbackResult {
     }
   }
 
-  return result as unknown as AiFeedbackResult;
+  const superpoderes = typeof result.superpoderes === 'string' && result.superpoderes.trim().length > 0
+    ? result.superpoderes.trim()
+    : '¡Demuestras un gran potencial para cultivar la Inteligencia Artificial y seguir impulsando la innovación en tu área!';
+
+  const siguienteReto = typeof result.siguienteReto === 'string' && result.siguienteReto.trim().length > 0
+    ? result.siguienteReto.trim()
+    : 'Continúa explorando nuevas herramientas de IA en tu trabajo diario para seguir creciendo.';
+
+  return {
+    conocimientoGeneral: result.conocimientoGeneral as number,
+    usoHerramientas: result.usoHerramientas as number,
+    identificacionOportunidades: result.identificacionOportunidades as number,
+    usoResponsable: result.usoResponsable as number,
+    disposicionImpulsar: result.disposicionImpulsar as number,
+    superpoderes,
+    siguienteReto,
+  };
 }
