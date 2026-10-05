@@ -14,6 +14,11 @@ import ResultsPage from './pages/survey/ResultsPage';
 import RecommendationsPage from './pages/survey/RecommendationsPage';
 import InitiativePage from './pages/survey/InitiativePage';
 
+// New Metrics Pages
+import AreasCargosPage from './pages/admin/metrics/AreasCargosPage';
+import CategoriasDimensionesPage from './pages/admin/metrics/CategoriasDimensionesPage';
+import CandidatosPage from './pages/admin/metrics/CandidatosPage';
+
 function App() {
   return (
     <AuthProvider>
@@ -37,6 +42,9 @@ function App() {
             <Route element={<RequireAdmin />}>
               <Route element={<AdminLayout />}>
                 <Route path="/admin/questions" element={<AdminQuestionsPage />} />
+                <Route path="/admin/areas-cargos" element={<AreasCargosPage />} />
+                <Route path="/admin/categorias-dimensiones" element={<CategoriasDimensionesPage />} />
+                <Route path="/admin/candidatos" element={<CandidatosPage />} />
               </Route>
             </Route>
           </Route>

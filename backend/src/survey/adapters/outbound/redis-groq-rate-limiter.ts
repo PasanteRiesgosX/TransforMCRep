@@ -1,4 +1,5 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 import { randomUUID } from 'node:crypto';
 import { AiCallRateLimiter } from '../../ports/ai-call-rate-limiter.port';
@@ -25,8 +26,8 @@ return {0, tonumber(oldest[2]) + windowMs - now}
 export class RedisGroqRateLimiter implements AiCallRateLimiter, OnModuleDestroy {
   private readonly redis: Redis;
 
-  constructor() {
-    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+  constructor(configService: ConfigService) {
+    const redisUrl = configService.getOrThrow<string>('REDIS_URL');
     this.redis = new Redis(redisUrl, { maxRetriesPerRequest: 1 });
   }
 

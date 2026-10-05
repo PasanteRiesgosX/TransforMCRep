@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
+import api from '../../services/api';
 import { Compass, User, Rocket, Crown, Sparkles, Lightbulb, PenTool, Zap, Palette, Code } from 'lucide-react';
 import logo2 from '../../assets/img/logo_2.png';
 import logoCanva from '../../assets/img/logosIA/canva-icon-logo.svg';
@@ -103,7 +103,7 @@ export default function RecommendationsPage() {
     const fetchResults = async () => {
       try {
         const token = localStorage.getItem('accessToken');
-        const response = await axios.get('http://localhost:3000/survey/results', {
+        const response = await api.get('/survey/results', {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (isActive) {

@@ -1,5 +1,6 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { SurveyController } from './survey.controller';
 import { PusherAuthController } from './adapters/inbound/pusher-auth.controller';
 import { GetSurveyQuestionsUseCase, GetActiveSurveyAttemptUseCase, SaveSurveyProgressUseCase, SubmitSurveyAttemptUseCase, GetSurveyResultsUseCase } from './application/survey-use-cases';
@@ -36,8 +37,14 @@ import { AuthModule } from '../auth/auth.module';
     { provide: REALTIME_FEEDBACK, useExisting: PusherRealtimeAdapter },
     {
       provide: GroqFeedbackSelector,
-      useFactory: (provider, rateLimiter) => new GroqFeedbackSelector(provider, rateLimiter),
-      inject: [AI_FEEDBACK_PROVIDER, AI_CALL_RATE_LIMITER],
+      useFactory: (provider, rateLimiter, configService: ConfigService) => {
+        const models = (configService.get<string>('GROQ_FEEDBACK_MODELS') ?? '')
+          .split(',')
+          .map((model) => model.trim())
+          .filter(Boolean);
+        return new GroqFeedbackSelector(provider, rateLimiter, models);
+      },
+      inject: [AI_FEEDBACK_PROVIDER, AI_CALL_RATE_LIMITER, ConfigService],
     },
     BullMqFeedbackDispatcher,
     SurveyFeedbackWorker,

@@ -2,7 +2,9 @@ import { AiFeedbackResult } from '../domain/ai-feedback-result';
 import { AiFeedbackUnavailableError, AiProviderError } from '../domain/ai-provider-error';
 import { AiFeedbackProvider } from '../ports/ai-feedback-provider.port';
 import { AiCallRateLimiter } from '../ports/ai-call-rate-limiter.port';
-import { GROQ_FEEDBACK_MODELS, GroqFeedbackSelector } from './groq-feedback-selector';
+import { GroqFeedbackSelector } from './groq-feedback-selector';
+
+const feedbackModels = ['model-primary', 'model-fallback'];
 
 const feedback: AiFeedbackResult = {
   conocimientoGeneral: 80,
@@ -18,7 +20,10 @@ function createSelector(generateFeedback: jest.Mock) {
   const provider = { generateFeedback } as unknown as AiFeedbackProvider;
   const waitForPermit = jest.fn().mockResolvedValue(undefined);
   const rateLimiter = { waitForPermit } as AiCallRateLimiter;
-  return { selector: new GroqFeedbackSelector(provider, rateLimiter), waitForPermit };
+  return {
+    selector: new GroqFeedbackSelector(provider, rateLimiter, feedbackModels),
+    waitForPermit,
+  };
 }
 
 describe('GroqFeedbackSelector', () => {
@@ -31,8 +36,8 @@ describe('GroqFeedbackSelector', () => {
     await expect(selector.generateFeedback('{}')).resolves.toEqual(feedback);
 
     expect(generateFeedback.mock.calls).toEqual([
-      ['{}', GROQ_FEEDBACK_MODELS[0]],
-      ['{}', GROQ_FEEDBACK_MODELS[1]],
+      ['{}', feedbackModels[0]],
+      ['{}', feedbackModels[1]],
     ]);
     expect(waitForPermit).toHaveBeenCalledTimes(2);
   });
@@ -46,8 +51,8 @@ describe('GroqFeedbackSelector', () => {
     await expect(selector.generateFeedback('{}')).resolves.toEqual(feedback);
 
     expect(generateFeedback.mock.calls).toEqual([
-      ['{}', GROQ_FEEDBACK_MODELS[0]],
-      ['{}', GROQ_FEEDBACK_MODELS[0]],
+      ['{}', feedbackModels[0]],
+      ['{}', feedbackModels[0]],
     ]);
     expect(waitForPermit).toHaveBeenCalledTimes(2);
   });
@@ -69,6 +74,14 @@ describe('GroqFeedbackSelector', () => {
     const { selector } = createSelector(generateFeedback);
 
     await expect(selector.generateFeedback('{}')).rejects.toBeInstanceOf(AiFeedbackUnavailableError);
-    expect(generateFeedback).toHaveBeenCalledTimes(GROQ_FEEDBACK_MODELS.length);
+    expect(generateFeedback).toHaveBeenCalledTimes(feedbackModels.length);
+  });
+
+  it('returns unavailable when no models are configured', async () => {
+    const provider = { generateFeedback: jest.fn() } as unknown as AiFeedbackProvider;
+    const rateLimiter = { waitForPermit: jest.fn() } as AiCallRateLimiter;
+    const selector = new GroqFeedbackSelector(provider, rateLimiter, []);
+
+    await expect(selector.generateFeedback('{}')).rejects.toBeInstanceOf(AiFeedbackUnavailableError);
   });
 });
