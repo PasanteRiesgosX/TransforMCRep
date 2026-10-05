@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import logoImg from '../assets/img/logo.png';
+import api from '../services/api';
 
 export default function CompleteProfilePage() {
   const navigate = useNavigate();
@@ -33,10 +34,9 @@ export default function CompleteProfilePage() {
       if (!userStr || !token) throw new Error('No estás autenticado.');
 
       const user = JSON.parse(userStr);
-      const API_BASE_URL = 'http://localhost:3000'; // Ajustar según entorno
 
-      const response = await axios.post(
-        `${API_BASE_URL}/auth/complete-profile`,
+      const response = await api.post(
+        '/auth/complete-profile',
         { email: user.email, area, position },
         { headers: { Authorization: `Bearer ${token}` } } // Por si aplicamos guards después
       );

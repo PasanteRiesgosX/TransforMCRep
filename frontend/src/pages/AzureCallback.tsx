@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
 
 export default function AzureCallback() {
   const navigate = useNavigate();
@@ -24,8 +24,7 @@ export default function AzureCallback() {
 
       try {
         // Enviar el code al backend
-        const API_BASE_URL = 'http://localhost:3000';
-        const response = await axios.post(`${API_BASE_URL}/auth/azure-callback`, { code });
+        const response = await api.post('/auth/azure-callback', { code });
 
         const { accessToken, user } = response.data;
 

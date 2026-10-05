@@ -12,11 +12,16 @@ export class GroqChatCompletionAdapter implements ChatCompletionProvider {
 
   constructor() {
     const apiKey = process.env.GROQ_CHAT_API_KEY;
-    this.model = process.env.GROQ_CHAT_MODEL || 'qwen/qwen3.8-27b';
-    this.client = apiKey ? new Groq({ apiKey, maxRetries: 0, timeout: 30_000 }) : null;
+    const model = process.env.GROQ_CHAT_MODEL;
+    this.model = model ?? '';
+    this.client = apiKey && model
+      ? new Groq({ apiKey, maxRetries: 0, timeout: 30_000 })
+      : null;
 
     if (!apiKey) {
       this.logger.warn('GROQ_CHAT_API_KEY is not configured; admin chat is unavailable.');
+    } else if (!model) {
+      this.logger.warn('GROQ_CHAT_MODEL is not configured; admin chat is unavailable.');
     }
   }
 

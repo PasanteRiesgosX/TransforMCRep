@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import Pusher from 'pusher-js';
 import { Brain, LineChart, Lightbulb, Shield, Crown, Sparkles, User, Rocket, Compass, Zap } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
+import api, { API_BASE_URL } from '../../services/api';
 
 interface AiFeedbackResult {
   conocimientoGeneral: number;
@@ -35,7 +35,7 @@ export default function ResultsPage() {
     const fetchResults = async () => {
       try {
         const token = localStorage.getItem('accessToken');
-        const response = await axios.get('http://localhost:3000/survey/results', {
+        const response = await api.get('/survey/results', {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (isActive) {
@@ -70,7 +70,7 @@ export default function ResultsPage() {
     const pusher = new Pusher(pusherKey, {
       cluster: pusherCluster,
       channelAuthorization: {
-        endpoint: 'http://localhost:3000/survey/realtime/auth',
+        endpoint: `${API_BASE_URL}/survey/realtime/auth`,
         transport: 'ajax',
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -443,4 +443,3 @@ export default function ResultsPage() {
     </div>
   );
 }
-

@@ -20,7 +20,7 @@ import { ChatModule } from './chat/chat.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        connection: new Redis(configService.get('REDIS_URL') || 'redis://localhost:6379', {
+        connection: new Redis(configService.getOrThrow<string>('REDIS_URL'), {
           maxRetriesPerRequest: null,
         }),
       }),

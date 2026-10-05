@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
 import { clearAdminChatSessions } from '../services/adminChat.service';
+import api from '../services/api';
 
 export interface User {
   id: string;
@@ -29,8 +29,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL = 'http://localhost:3000'; // Ajustar según entorno
-
   const refreshUser = async () => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
@@ -41,7 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/auth/me`, {
+      const response = await api.get('/auth/me', {
         headers: {
           Authorization: `Bearer ${token}`
         }
