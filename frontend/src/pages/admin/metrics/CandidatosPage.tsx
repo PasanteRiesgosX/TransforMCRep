@@ -82,10 +82,10 @@ export default function CandidatosPage() {
   const getGateReason = (c: CandidateMetric) => {
     if (c.eligibilityStatus === 'ELEGIBLE') {
       return (
-        <div className="bg-green-500/10 border border-green-500/20 text-green-700 text-green-400 p-4 rounded-xl">
+        <div className={clsx("border p-4 rounded-xl", isDarkMode ? "bg-green-500/10 border-green-500/20 text-green-300" : "bg-green-500/10 border-green-500/30 text-green-800")}>
           <p className="font-bold mb-1">El candidato es elegible por la siguiente razón:</p>
           <p className="text-sm opacity-90 mb-2">Puntaje aprobatorio y Gate exitoso.</p>
-          <div className="bg-black/5 bg-black/20 p-3 rounded">
+          <div className={clsx("p-3 rounded", isDarkMode ? "bg-black/30" : "bg-black/5")}>
             <span className="font-semibold block text-xs uppercase opacity-70 mb-1">Pregunta Clave (Gate):</span>
             <p className="text-sm italic">"{c.gateQuestionText}"</p>
             <p className="font-semibold text-sm mt-1">Respuesta: {c.gateAnswerText}</p>
@@ -95,10 +95,10 @@ export default function CandidatosPage() {
     }
     if (c.eligibilityStatus === 'NO_ELEGIBLE_POR_GATE') {
       return (
-        <div className="bg-orange-500/10 border border-orange-500/20 text-orange-700 text-orange-400 p-4 rounded-xl">
+        <div className={clsx("border p-4 rounded-xl", isDarkMode ? "bg-orange-500/10 border-orange-500/20 text-orange-300" : "bg-orange-500/10 border-orange-500/30 text-orange-800")}>
           <p className="font-bold mb-1">El candidato NO es elegible por la siguiente razón:</p>
           <p className="text-sm opacity-90 mb-2">Puntaje global excelente, pero no aprobó la pregunta obligatoria (Gate).</p>
-          <div className="bg-black/5 bg-black/20 p-3 rounded">
+          <div className={clsx("p-3 rounded", isDarkMode ? "bg-black/30" : "bg-black/5")}>
             <span className="font-semibold block text-xs uppercase opacity-70 mb-1">Pregunta Clave (Gate):</span>
             <p className="text-sm italic">"{c.gateQuestionText}"</p>
             <p className="font-semibold text-sm mt-1">Respuesta: {c.gateAnswerText}</p>
@@ -107,10 +107,10 @@ export default function CandidatosPage() {
       );
     }
     return (
-      <div className="bg-red-500/10 border border-red-500/20 text-red-700 text-red-400 p-4 rounded-xl">
+      <div className={clsx("border p-4 rounded-xl", isDarkMode ? "bg-red-500/10 border-red-500/20 text-red-300" : "bg-red-500/10 border-red-500/30 text-red-800")}>
         <p className="font-bold mb-1">El candidato NO es elegible por la siguiente razón:</p>
         <p className="text-sm opacity-90 mb-2">No alcanzó el puntaje mínimo requerido.</p>
-        <div className="bg-black/5 bg-black/20 p-3 rounded">
+        <div className={clsx("p-3 rounded", isDarkMode ? "bg-black/30" : "bg-black/5")}>
           <span className="font-semibold block text-xs uppercase opacity-70 mb-1">Pregunta Clave (Gate):</span>
           <p className="text-sm italic">"{c.gateQuestionText}"</p>
           <p className="font-semibold text-sm mt-1">Respuesta: {c.gateAnswerText}</p>

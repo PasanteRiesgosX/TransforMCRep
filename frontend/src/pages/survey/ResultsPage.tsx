@@ -421,10 +421,6 @@ export default function ResultsPage() {
     <div className="text-xs text-slate-200 leading-relaxed bg-[#121212] border border-white/10 rounded-lg p-3 italic">
       {ai?.superpoderes || (aiStatusMessage ?? 'Analizando tus respuestas para descubrir tus superpoderes en Inteligencia Artificial...')}
     </div>
-    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-950/60 to-purple-950/60 border border-[#00D7D0]/30 text-[11px] font-semibold text-[#7DE5DF] mt-auto">
-      <Sparkles className="w-3.5 h-3.5" />
-      <span>Este mensaje es único, fue generado en base a tus respuestas usando I.A</span>
-    </div>
   </div>
 </div>
 
