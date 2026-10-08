@@ -3,7 +3,6 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { ReorderQuestionsDto } from './dto/reorder-questions.dto';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class QuestionsService {

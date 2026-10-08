@@ -29,6 +29,24 @@ export interface SurveyAttempt {
   }[];
 }
 
+export interface SurveyAiFeedback {
+  conocimientoGeneral: number;
+  usoHerramientas: number;
+  identificacionOportunidades: number;
+  usoResponsable: number;
+  disposicionImpulsar: number;
+  superpoderes?: string;
+  siguienteReto?: string;
+}
+
+export interface SurveyResults {
+  overallScore: number | null;
+  range: 'EXPLORADOR' | 'USUARIO' | 'IMPULSOR' | 'EMBAJADOR' | null;
+  description: string;
+  aiFeedback: SurveyAiFeedback | null;
+  aiFeedbackStatus: 'NOT_REQUESTED' | 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+}
+
 const getHeaders = () => {
   const token = localStorage.getItem('accessToken');
   return {
@@ -54,6 +72,11 @@ export const surveyService = {
 
   submitAttempt: async (attemptId: string, finalAnswers?: unknown[]) => {
     const response = await api.post(`/survey/attempts/${attemptId}/submit`, finalAnswers || [], { headers: getHeaders() });
+    return response.data;
+  },
+
+  getResults: async (): Promise<SurveyResults> => {
+    const response = await api.get<SurveyResults>('/survey/results', { headers: getHeaders() });
     return response.data;
   },
 };

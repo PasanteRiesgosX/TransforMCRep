@@ -1,12 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-
-function resolveRank(score: number) {
-  if (score <= 25) return 'EXPLORADOR';
-  if (score <= 50) return 'USUARIO';
-  if (score <= 75) return 'IMPULSOR';
-  return 'EMBAJADOR';
-}
+import { calculateWeightedScore, resolveRank } from '../../scoring/scoring';
 
 @Injectable()
 export class MetricsService {
@@ -107,17 +101,17 @@ export class MetricsService {
         }
       }
 
-      const overallScore = totalWeight > 0 ? Number(((totalWeightedValue / totalWeight) * 100).toFixed(2)) : 0;
+      const overallScore = calculateWeightedScore(totalWeightedValue, totalWeight) ?? 0;
       const range = resolveRank(overallScore);
 
       const dimensions = Array.from(dimensionScoresMap.entries()).map(([dim, agg]) => ({
         dimension: dim,
-        score: agg.weight > 0 ? Number(((agg.weightedValue / agg.weight) * 100).toFixed(2)) : 0
+        score: calculateWeightedScore(agg.weightedValue, agg.weight) ?? 0
       }));
 
       const categoryScores = Array.from(categoryScoresMap.entries()).map(([cat, agg]) => ({
         category: cat,
-        score: agg.weight > 0 ? Number(((agg.weightedValue / agg.weight) * 100).toFixed(2)) : 0
+        score: calculateWeightedScore(agg.weightedValue, agg.weight) ?? 0
       }));
 
       const categoryDimensionScores = Array.from(categoryDimensionScoresMap.entries()).map(([key, agg]) => {
@@ -125,7 +119,7 @@ export class MetricsService {
         return {
           category: cat,
           dimension: dim,
-          score: agg.weight > 0 ? Number(((agg.weightedValue / agg.weight) * 100).toFixed(2)) : 0
+          score: calculateWeightedScore(agg.weightedValue, agg.weight) ?? 0
         };
       });
 

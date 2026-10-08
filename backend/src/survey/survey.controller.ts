@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   NotFoundException,
+  ParseArrayPipe,
   Param,
   Post,
   Request,
@@ -18,7 +19,8 @@ import {
   SubmitSurveyAttemptUseCase,
 } from './application/survey-use-cases';
 import { SurveyAttemptNotFoundError, SurveyRequestError } from './domain/survey-errors';
-import type { SurveyAnswerInput, SurveyProgressInput } from './domain/survey-models';
+import { SurveyAnswerDto } from './dto/survey-answer.dto';
+import { SurveyProgressDto } from './dto/survey-progress.dto';
 
 @Controller('survey')
 @UseGuards(JwtAuthGuard)
@@ -42,12 +44,16 @@ export class SurveyController {
   }
 
   @Post('attempts/:id/progress')
-  saveProgress(@Request() req: any, @Param('id') id: string, @Body() progress: SurveyProgressInput) {
+  saveProgress(@Request() req: any, @Param('id') id: string, @Body() progress: SurveyProgressDto) {
     return this.execute(() => this.saveProgressUseCase.execute(req.user.id, id, progress));
   }
 
   @Post('attempts/:id/submit')
-  submitAttempt(@Request() req: any, @Param('id') id: string, @Body() answers: SurveyAnswerInput[]) {
+  submitAttempt(
+    @Request() req: any,
+    @Param('id') id: string,
+    @Body(new ParseArrayPipe({ items: SurveyAnswerDto })) answers: SurveyAnswerDto[],
+  ) {
     return this.execute(() => this.submitAttemptUseCase.execute(req.user.id, id, answers));
   }
 

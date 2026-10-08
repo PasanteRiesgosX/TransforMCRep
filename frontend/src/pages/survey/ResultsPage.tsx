@@ -3,29 +3,12 @@ import Pusher from 'pusher-js';
 import { Brain, LineChart, Lightbulb, Shield, Crown, Sparkles, User, Rocket, Compass, Zap } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
-import api, { API_BASE_URL } from '../../services/api';
-
-interface AiFeedbackResult {
-  conocimientoGeneral: number;
-  usoHerramientas: number;
-  identificacionOportunidades: number;
-  usoResponsable: number;
-  disposicionImpulsar: number;
-  superpoderes?: string;
-  siguienteReto?: string;
-}
-
-interface ResultsData {
-  overallScore: number | null;
-  range: 'EXPLORADOR' | 'USUARIO' | 'IMPULSOR' | 'EMBAJADOR' | null;
-  description: string;
-  aiFeedback: AiFeedbackResult | null;
-  aiFeedbackStatus: 'NOT_REQUESTED' | 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
-}
+import { API_BASE_URL } from '../../services/api';
+import { surveyService, type SurveyResults } from '../../services/survey.service';
 
 export default function ResultsPage() {
   const { user } = useAuth();
-  const [data, setData] = useState<ResultsData | null>(null);
+  const [data, setData] = useState<SurveyResults | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -34,16 +17,13 @@ export default function ResultsPage() {
 
     const fetchResults = async () => {
       try {
-        const token = localStorage.getItem('accessToken');
-        const response = await api.get('/survey/results', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const results = await surveyService.getResults();
         if (isActive) {
-          setData(response.data);
+          setData(results);
           setError('');
         }
       } catch (err) {
-        const error = err as any;
+        const error = err as { response?: { status?: number } };
         if (isActive) {
           if (error.response?.status === 404) {
             setError('Aún no has completado la evaluación.');

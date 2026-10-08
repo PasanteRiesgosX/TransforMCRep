@@ -16,17 +16,17 @@ import { AI_CALL_RATE_LIMITER } from './ports/ai-call-rate-limiter.port';
 import { FEEDBACK_DISPATCHER } from './ports/feedback-dispatcher.port';
 import { SURVEY_REPOSITORY } from './ports/survey-repository.port';
 import { REALTIME_FEEDBACK } from './ports/realtime-feedback.port';
-import { PrismaService } from '../prisma/prisma.service';
 import { AuthModule } from '../auth/auth.module';
+import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
   imports: [
     AuthModule,
+    PrismaModule,
     BullModule.registerQueue({ name: SURVEY_FEEDBACK_QUEUE }),
   ],
   controllers: [SurveyController, PusherAuthController],
   providers: [
-    PrismaService,
     PrismaSurveyRepository,
     { provide: SURVEY_REPOSITORY, useExisting: PrismaSurveyRepository },
     GroqFeedbackProvider,

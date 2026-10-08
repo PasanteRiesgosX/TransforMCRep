@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../../services/api';
+import { surveyService, type SurveyResults } from '../../services/survey.service';
 import { Compass, User, Rocket, Crown, Sparkles, Lightbulb, PenTool, Zap, Palette, Code } from 'lucide-react';
 import logo2 from '../../assets/img/logo_2.png';
 import logoCanva from '../../assets/img/logosIA/canva-icon-logo.svg';
@@ -12,24 +12,6 @@ import logoGemini from '../../assets/img/logosIA/gemini-logo.svg';
 import logoPowerAutomate from '../../assets/img/logosIA/Microsoft_Power_Automate.svg.webp';
 import logoN8n from '../../assets/img/logosIA/N8n-logo-new.svg';
 import logoNotion from '../../assets/img/logosIA/Notion-logo.webp';
-
-interface AiFeedbackResult {
-  conocimientoGeneral: number;
-  usoHerramientas: number;
-  identificacionOportunidades: number;
-  usoResponsable: number;
-  disposicionImpulsar: number;
-  superpoderes?: string;
-  siguienteReto?: string;
-}
-
-interface ResultsData {
-  overallScore: number | null;
-  range: 'EXPLORADOR' | 'USUARIO' | 'IMPULSOR' | 'EMBAJADOR' | null;
-  description: string;
-  aiFeedback: AiFeedbackResult | null;
-  aiFeedbackStatus: 'NOT_REQUESTED' | 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
-}
 
 const TOOLS_BY_LEVEL: Record<string, string[]> = {
   EXPLORADOR: ['GEMINI', 'CHAT GPT', 'CANVA MAGIC'],
@@ -92,7 +74,7 @@ const LEVEL_NAMES: Record<string, { label: string; color: string; border: string
 };
 
 export default function RecommendationsPage() {
-  const [data, setData] = useState<ResultsData | null>(null);
+  const [data, setData] = useState<SurveyResults | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [clickCount, setClickCount] = useState(0);
@@ -102,12 +84,9 @@ export default function RecommendationsPage() {
 
     const fetchResults = async () => {
       try {
-        const token = localStorage.getItem('accessToken');
-        const response = await api.get('/survey/results', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const results = await surveyService.getResults();
         if (isActive) {
-          setData(response.data);
+          setData(results);
           setError('');
         }
       } catch (err) {

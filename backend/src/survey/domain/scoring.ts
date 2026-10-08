@@ -1,4 +1,9 @@
 import { SurveyAnswerRecord, SurveyQuestionRecord } from './survey-models';
+import {
+  calculateWeightedScore,
+  resolveRank,
+  type ScoreRank,
+} from '../../scoring/scoring';
 
 export type DimensionScore = {
   dimension: string;
@@ -8,20 +13,13 @@ export type DimensionScore = {
 
 export type DeterministicResult = {
   overallScore: number | null;
-  range: 'EXPLORADOR' | 'USUARIO' | 'IMPULSOR' | 'EMBAJADOR' | null;
+  range: ScoreRank | null;
   dimensions: DimensionScore[];
   internalEligibility: {
     isEligible: boolean;
     failedGateIds: string[];
   };
 };
-
-export function resolveRank(score: number): NonNullable<DeterministicResult['range']> {
-  if (score <= 25) return 'EXPLORADOR';
-  if (score <= 50) return 'USUARIO';
-  if (score <= 75) return 'IMPULSOR';
-  return 'EMBAJADOR';
-}
 
 export function calculateSurveyResults(
   answers: SurveyAnswerRecord[],
@@ -99,14 +97,12 @@ export function calculateSurveyResults(
     }
   }
 
-  const overallScore = totalWeight > 0
-    ? Number(((totalScoreSum / totalWeight) * 100).toFixed(2))
-    : null;
+  const overallScore = calculateWeightedScore(totalScoreSum, totalWeight);
   const dimensions = Object.entries(dimensionAgg)
     .filter(([, aggregate]) => aggregate.sumWeight > 0)
     .map(([dimension, aggregate]) => ({
       dimension,
-      score: Number(((aggregate.sumWeighted / aggregate.sumWeight) * 100).toFixed(2)),
+      score: calculateWeightedScore(aggregate.sumWeighted, aggregate.sumWeight) ?? 0,
       questionCount: aggregate.count,
     }));
 
